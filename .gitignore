@@ -1,0 +1,17 @@
+node_modules/
+.env
+*.env.local
+__pycache__/
+*.pyc
+.venv/
+dist/
+.vite/
+coverage/
+.pytest_cache/
+.DS_Store
+*.log
+backend/.venv/
+frontend/node_modules/
+alembic/versions/__pycache__/
+.ruff_cache/
+*.sqlite3

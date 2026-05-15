@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "IBM Plex Arabic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/ibmplexarabic/v19/Qw3MZRtZOoHUdG7qkMq5gdeWMAmrEPc.woff2")
+    format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Arabic";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/ibmplexarabic/v19/Qw3NZRtZOoHUdG7qkMq5gdeWMAmFNYlk.woff2")
+    format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Arabic";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/ibmplexarabic/v19/Qw3NZRtZOoHUdG7qkMq5gdeWMAmJNolk.woff2")
+    format("woff2");
+}
+
+@theme {
+  --font-sans: "IBM Plex Arabic", "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --color-brand: #0D9488;
+  --color-brand-light: #14B8A6;
+  --color-accent: #F59E0B;
+  --color-success: #10B981;
+  --color-danger: #F43F5E;
+  --color-background: oklch(0.1 0 0);
+  --color-foreground: oklch(0.95 0 0);
+  --color-card: oklch(0.12 0 0);
+  --color-card-foreground: oklch(0.95 0 0);
+  --color-popover: oklch(0.12 0 0);
+  --color-popover-foreground: oklch(0.95 0 0);
+  --color-primary: oklch(0.6 0.15 175);
+  --color-primary-foreground: oklch(0.98 0 0);
+  --color-secondary: oklch(0.2 0 0);
+  --color-secondary-foreground: oklch(0.95 0 0);
+  --color-muted: oklch(0.2 0 0);
+  --color-muted-foreground: oklch(0.6 0 0);
+  --color-destructive: oklch(0.55 0.2 25);
+  --color-destructive-foreground: oklch(0.98 0 0);
+  --color-border: oklch(0.25 0 0);
+  --color-input: oklch(0.25 0 0);
+  --color-ring: oklch(0.6 0.15 175);
+  --radius: 0.625rem;
+}
+
+:root {
+  direction: rtl;
+}
+
+.amount-display {
+  direction: ltr;
+  unicode-bidi: embed;
+  font-variant-numeric: tabular-nums;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+body {
+  margin: 0;
+  background: oklch(0.1 0 0);
+  color: oklch(0.95 0 0);
+  font-family: "IBM Plex Arabic", "IBM Plex Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
