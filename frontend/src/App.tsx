@@ -6,6 +6,8 @@ import { useDirection } from "@/hooks/useDirection";
 import "@/lib/i18n";
 import Login from "@/pages/Login";
 import Home from "@/pages/Home";
+import CapturePage from "@/features/capture/pages/CapturePage";
+import DraftReviewPage from "@/features/capture/pages/DraftReviewPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -62,6 +64,22 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/capture"
+          element={
+            <ProtectedRoute>
+              <CapturePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/drafts"
+          element={
+            <ProtectedRoute>
+              <DraftReviewPage />
             </ProtectedRoute>
           }
         />

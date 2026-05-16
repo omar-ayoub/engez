@@ -32,8 +32,10 @@
   --font-mono: "IBM Plex Mono", monospace;
   --color-brand: #0D9488;
   --color-brand-light: #14B8A6;
+  --color-brand-surface: #0F766E;
   --color-accent: #F59E0B;
   --color-success: #10B981;
+  --color-success-surface: #047857;
   --color-danger: #F43F5E;
   --color-background: oklch(0.1 0 0);
   --color-foreground: oklch(0.95 0 0);

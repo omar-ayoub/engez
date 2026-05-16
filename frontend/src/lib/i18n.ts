@@ -2,8 +2,10 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-import arCommon from "../../public/locales/ar/common.json";
-import enCommon from "../../public/locales/en/common.json";
+import arCommon from "@/locales/ar/common.json";
+import enCommon from "@/locales/en/common.json";
+import arCapture from "@/locales/ar/capture.json";
+import enCapture from "@/locales/en/capture.json";
 
 i18n
   .use(LanguageDetector)
@@ -11,7 +13,7 @@ i18n
   .init({
     fallbackLng: "ar",
     defaultNS: "common",
-    ns: ["common"],
+    ns: ["common", "capture"],
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage", "navigator"],
@@ -19,8 +21,8 @@ i18n
       lookupLocalStorage: "engez-lang",
     },
     resources: {
-      ar: { common: arCommon },
-      en: { common: enCommon },
+      ar: { common: arCommon, capture: arCapture },
+      en: { common: enCommon, capture: enCapture },
     },
   });
 

@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -30,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.60.0",
     "@rolldown/binding-win32-x64-msvc": "^1.0.1",
     "@tailwindcss/vite": "^4.0.0",
     "@testing-library/react": "^16.0.0",
@@ -47,6 +50,11 @@
     "vite": "^8.0.12",
     "vite-plugin-pwa": "^0.21.0",
     "vitest": "^3.0.0",
+    "workbox-background-sync": "^7.4.1",
+    "workbox-expiration": "^7.4.1",
+    "workbox-precaching": "^7.4.1",
+    "workbox-routing": "^7.4.1",
+    "workbox-strategies": "^7.4.1",
     "workbox-window": "^7.3.0"
   }
 }

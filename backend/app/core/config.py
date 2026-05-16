@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     VAPID_PRIVATE_KEY: str = ""
     VAPID_PUBLIC_KEY: str = ""
     VAPID_CLAIMS_EMAIL: str = ""
+    AI_RATE_LIMIT_VOICE: int = 100
+    AI_RATE_LIMIT_RECEIPT: int = 100
     SEED_ADMIN_EMAIL: str = "admin@engez.app"
     SEED_ADMIN_PASSWORD: str = "changeme123"
 
