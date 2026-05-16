@@ -1,0 +1,72 @@
+{
+  "voice": {
+    "record": "سجّل صوتك",
+    "recording": "جاري التسجيل...",
+    "stop": "إيقاف",
+    "processing": "جاري المعالجة...",
+    "noPermission": "لا يمكن الوصول للميكروفون",
+    "noSpeech": "لم يتم اكتشاف كلام",
+    "networkError": "خطأ في الاتصال",
+    "maxDuration": "الحد الأقصى ٦٠ ثانية"
+  },
+  "receipt": {
+    "capture": "صوّر الإيصال",
+    "retake": "إعادة التصوير",
+    "processing": "جاري المعالجة...",
+    "qrDetected": "تم اكتشاف رمز الفاتورة الإلكترونية",
+    "noCamera": "لا يمكن الوصول للكاميرا",
+    "unreadable": "تعذر قراءة الإيصال. يرجى إعادة التصوير"
+  },
+  "form": {
+    "amount": "المبلغ",
+    "vendor": "المورد",
+    "items": "الأصناف",
+    "category": "الفئة",
+    "project": "المشروع",
+    "notes": "ملاحظات",
+    "submit": "إرسال المصروف",
+    "submitting": "جاري الإرسال...",
+    "saved": "تم الحفظ تلقائياً",
+    "vendorPlaceholder": "ابدأ بكتابة اسم المورد",
+    "itemsPlaceholder": "ما الذي تم شراؤه؟"
+  },
+  "categories": {
+    "materials": "مواد بناء",
+    "transport": "نقل",
+    "fuel": "وقود",
+    "food": "أطعمة",
+    "equipment": "معدات",
+    "permits": "تصاريح",
+    "maintenance": "صيانة",
+    "other": "أخرى"
+  },
+  "confidence": {
+    "high": "دقة عالية",
+    "medium": "دقة متوسطة",
+    "low": "يتطلب مراجعة"
+  },
+  "sync": {
+    "pending": "في انتظار المزامنة",
+    "syncing": "جاري المزامنة...",
+    "synced": "تمت المزامنة",
+    "offline": "غير متصل — سيتم الحفظ محلياً",
+    "draftsReady": "{{count}} مسودات جاهزة للمراجعة",
+    "draftsUnprocessed": "{{count}} قيد المعالجة",
+    "reviewDrafts": "مراجعة المسودات",
+    "discard": "تجاهل",
+    "retry": "إعادة المحاولة",
+    "storageWarning": "المساحة قاربت على النفاد — قم بمزامنة المصروفات المعلقة"
+  },
+  "modes": {
+    "voice": "صوتي",
+    "receipt": "إيصال",
+    "combined": "صوتي + إيصال",
+    "manual": "يدوي"
+  },
+  "errors": {
+    "rateLimit": "تم تجاوز حد الاستخدام. يرجى المحاولة لاحقاً",
+    "emptyExtraction": "لم يتم التعرف على بيانات",
+    "timeout": "انتهت مهلة الاتصال",
+    "offline": "غير متصل بالإنترنت"
+  }
+}

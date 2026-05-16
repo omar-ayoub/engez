@@ -1,0 +1,81 @@
+{
+  "app": {
+    "name": "إنجز",
+    "tagline": "إدارة مصروفات الميدان"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "expenses": "المصروفات",
+    "projects": "المشاريع",
+    "settings": "الإعدادات"
+  },
+  "expense": {
+    "new": "مصروف جديد",
+    "amount": "المبلغ",
+    "category": "الفئة",
+    "vendor": "المورد",
+    "project": "المشروع",
+    "notes": "ملاحظات",
+    "submit": "إرسال",
+    "pending": "في الانتظار",
+    "approved": "تم الموافقة",
+    "rejected": "مرفوض",
+    "voice": "تسجيل صوتي",
+    "camera": "صورة الإيصال",
+    "savedLocally": "محفوظ محلياً — سيتم المزامنة عند الاتصال",
+    "synced": "تمت المزامنة",
+    "etaVerified": "تم التحقق من الفاتورة الإلكترونية"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "logout": "تسجيل الخروج",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "accountLocked": "تم تأمين الحساب. حاول مرة أخرى بعد 15 دقيقة",
+    "biometric": "تسجيل الدخول بالبصمة"
+  },
+  "status": {
+    "online": "متصل",
+    "offline": "غير متصل",
+    "syncing": "جاري المزامنة..."
+  },
+  "roles": {
+    "field_worker": "عامل ميدان",
+    "accountant": "محاسب",
+    "admin": "مدير"
+  },
+  "admin": {
+    "users": "المستخدمون",
+    "companies": "الشركات",
+    "projects": "المشاريع",
+    "categories": "الفئات",
+    "create": "إنشاء",
+    "edit": "تعديل"
+  },
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "search": "بحث",
+    "filter": "تصفية",
+    "noResults": "لا توجد نتائج",
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "retry": "إعادة المحاولة",
+    "delete": "حذف"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "invalidEmail": "بريد إلكتروني غير صالح",
+    "minLength": "يجب أن يكون {{count}} أحرف على الأقل"
+  },
+  "home": {
+    "welcome": "مرحباً، {{name}}"
+  },
+  "language": {
+    "toggle": "English",
+    "current": "العربية"
+  }
+}
