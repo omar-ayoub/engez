@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import require_admin, get_tenant_scope
 from app.core.database import get_db
+from app.core.tenant import TenantScope
 from app.core.security import hash_password
 from app.models.user import User
 from app.schemas.user import PaginatedUsers, UserCreate, UserRead, UserUpdate
@@ -17,12 +18,12 @@ async def list_users(
     is_active: bool | None = None,
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    query = select(User).where(User.company_id == company_id)
-    count_query = select(func.count()).select_from(User).where(User.company_id == company_id)
+    query = select(User).where(User.company_id == scope.company_id)
+    count_query = select(func.count()).select_from(User).where(User.company_id == scope.company_id)
 
     if role:
         query = query.where(User.role == role)
@@ -44,7 +45,7 @@ async def list_users(
 @router.post("/", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 async def create_user(
     body: UserCreate,
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
@@ -64,7 +65,7 @@ async def create_user(
         name_ar=body.name_ar,
         hashed_password=hash_password(body.password),
         role=body.role,
-        company_id=company_id,
+        company_id=scope.company_id,
     )
     db.add(user)
     await db.commit()
@@ -76,12 +77,12 @@ async def create_user(
 async def update_user(
     user_id: str,
     body: UserUpdate,
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
-        select(User).where(User.id == user_id, User.company_id == company_id)
+        select(User).where(User.id == user_id, User.company_id == scope.company_id)
     )
     user = result.scalar_one_or_none()
     if not user:

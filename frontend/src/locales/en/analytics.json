@@ -1,0 +1,43 @@
+{
+  "title": "Analytics Dashboard",
+  "summary": {
+    "totalSpend": "Total Spend",
+    "expenseCount": "Expense Count",
+    "projectCount": "Project Count",
+    "period": "Last {{days}} days"
+  },
+  "charts": {
+    "spendByProject": "Spend by Project",
+    "spendByCategory": "Spend by Category",
+    "spendTrend": "Spend Trend",
+    "budgetVsActual": "Budget vs Actual",
+    "budget": "Budget",
+    "actual": "Actual",
+    "spend": "Spend",
+    "count": "Count",
+    "week": "Week"
+  },
+  "filters": {
+    "period": "Period",
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "last90": "Last 90 days",
+    "last365": "Last year"
+  },
+  "export": {
+    "title": "Export",
+    "csv": "Export CSV",
+    "excel": "Export Excel",
+    "downloading": "Downloading...",
+    "failed": "File export failed"
+  },
+  "empty": {
+    "title": "No Data",
+    "description": "No approved expenses in this period"
+  },
+  "error": {
+    "title": "Error",
+    "description": "Failed to load analytics data"
+  },
+  "loading": "Loading analytics..."
+}

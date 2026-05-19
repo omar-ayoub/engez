@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.deps import get_current_active_user, get_tenant_scope
+from app.core.tenant import TenantScope
 from app.models.user import User
 from app.schemas.receipt import ReceiptExtractionResponse
 from app.services.ai_receipt import process_receipt
@@ -23,11 +24,11 @@ MAX_IMAGE_SIZE = 10 * 1024 * 1024
 @router.post("/extract", response_model=ReceiptExtractionResponse)
 async def extract_receipt(
     image: Annotated[UploadFile, File()],
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    await check_rate_limit(company_id, "receipt", settings.AI_RATE_LIMIT_RECEIPT)
+    await check_rate_limit(scope.company_id, "receipt", settings.AI_RATE_LIMIT_RECEIPT)
 
     if image.size and image.size > MAX_IMAGE_SIZE:
         raise HTTPException(
@@ -48,14 +49,14 @@ async def extract_receipt(
             },
         )
 
-    receipt_url = await upload_blob(company_id, "receipts", image_bytes, "jpg")
+    receipt_url = await upload_blob(scope.company_id, "receipts", image_bytes, "jpg")
 
     try:
         extraction, qr_detected, qr_data = await process_receipt(
-            image_bytes, company_id, db
+            image_bytes, scope.company_id, db
         )
     except Exception:
-        logger.exception("Receipt processing failed for company=%s", company_id)
+        logger.exception("Receipt processing failed for company=%s", scope.company_id)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail={

@@ -6,6 +6,12 @@ import arCommon from "@/locales/ar/common.json";
 import enCommon from "@/locales/en/common.json";
 import arCapture from "@/locales/ar/capture.json";
 import enCapture from "@/locales/en/capture.json";
+import arReview from "@/locales/ar/review.json";
+import enReview from "@/locales/en/review.json";
+import arAnalytics from "@/locales/ar/analytics.json";
+import enAnalytics from "@/locales/en/analytics.json";
+import arIntegrations from "@/locales/ar/integrations.json";
+import enIntegrations from "@/locales/en/integrations.json";
 
 i18n
   .use(LanguageDetector)
@@ -13,7 +19,7 @@ i18n
   .init({
     fallbackLng: "ar",
     defaultNS: "common",
-    ns: ["common", "capture"],
+    ns: ["common", "capture", "review", "analytics", "integrations"],
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage", "navigator"],
@@ -21,8 +27,8 @@ i18n
       lookupLocalStorage: "engez-lang",
     },
     resources: {
-      ar: { common: arCommon, capture: arCapture },
-      en: { common: enCommon, capture: enCapture },
+      ar: { common: arCommon, capture: arCapture, review: arReview, analytics: arAnalytics, integrations: arIntegrations },
+      en: { common: enCommon, capture: enCapture, review: enReview, analytics: enAnalytics, integrations: enIntegrations },
     },
   });
 

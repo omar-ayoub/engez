@@ -11,14 +11,14 @@ import {
 } from "lucide-react";
 
 const CATEGORIES = [
-  { id: "materials", icon: Hammer },
-  { id: "transport", icon: Truck },
-  { id: "fuel", icon: Fuel },
-  { id: "food", icon: UtensilsCrossed },
-  { id: "equipment", icon: Wrench },
-  { id: "permits", icon: FileCheck },
-  { id: "maintenance", icon: Settings },
-  { id: "other", icon: MoreHorizontal },
+  { id: "cat-materials", label: "materials", icon: Hammer },
+  { id: "cat-transport", label: "transport", icon: Truck },
+  { id: "cat-fuel", label: "fuel", icon: Fuel },
+  { id: "cat-food", label: "food", icon: UtensilsCrossed },
+  { id: "cat-equipment", label: "equipment", icon: Wrench },
+  { id: "cat-permits", label: "permits", icon: FileCheck },
+  { id: "cat-maintenance", label: "maintenance", icon: Settings },
+  { id: "cat-other", label: "other", icon: MoreHorizontal },
 ] as const;
 
 interface CategoryGridProps {
@@ -47,7 +47,7 @@ export default function CategoryGrid({ selected, onChange }: CategoryGridProps) 
 
   return (
     <div id="category-grid" className="grid grid-cols-4 grid-rows-2 gap-2" role="radiogroup" aria-label={t("form.category")}>
-      {CATEGORIES.map(({ id, icon: Icon }, index) => (
+      {CATEGORIES.map(({ id, label, icon: Icon }, index) => (
         <button
           key={id}
           type="button"
@@ -61,10 +61,10 @@ export default function CategoryGrid({ selected, onChange }: CategoryGridProps) 
               : "bg-secondary text-muted-foreground hover:bg-accent"
           }`}
           aria-checked={selected === id}
-          aria-label={t(`categories.${id}`)}
+          aria-label={t(`categories.${label}`)}
         >
           <Icon className="size-5" />
-          <span className="text-xs leading-tight">{t(`categories.${id}`)}</span>
+          <span className="text-xs leading-tight">{t(`categories.${label}`)}</span>
         </button>
       ))}
     </div>

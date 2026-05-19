@@ -5,6 +5,7 @@ from sqlalchemy.orm import selectinload
 
 from app.core.database import AsyncSession, get_db
 from app.core.security import verify_access_token
+from app.core.tenant import TenantScope
 from app.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
@@ -75,5 +76,19 @@ async def require_admin(
     return user
 
 
-def get_tenant_scope(user: User = Depends(get_current_active_user)) -> str:
-    return user.company_id
+async def require_accountant_or_admin(
+    user: User = Depends(get_current_active_user),
+) -> User:
+    if user.role not in ("accountant", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "detail": "صلاحية المحاسب أو المدير مطلوبة",
+                "detail_en": "Accountant or admin role required",
+            },
+        )
+    return user
+
+
+def get_tenant_scope(user: User = Depends(get_current_active_user)) -> TenantScope:
+    return TenantScope(user.company_id)

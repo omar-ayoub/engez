@@ -1,0 +1,43 @@
+{
+  "title": "لوحة التحليلات",
+  "summary": {
+    "totalSpend": "إجمالي المصروفات",
+    "expenseCount": "عدد المصروفات",
+    "projectCount": "عدد المشاريع",
+    "period": "آخر {{days}} يوم"
+  },
+  "charts": {
+    "spendByProject": "المصروفات حسب المشروع",
+    "spendByCategory": "المصروفات حسب الفئة",
+    "spendTrend": "اتجاه المصروفات",
+    "budgetVsActual": "الميزانية مقابل الفعلي",
+    "budget": "الميزانية",
+    "actual": "الفعلي",
+    "spend": "المصروفات",
+    "count": "العدد",
+    "week": "الأسبوع"
+  },
+  "filters": {
+    "period": "الفترة",
+    "last7": "آخر 7 أيام",
+    "last30": "آخر 30 يوم",
+    "last90": "آخر 90 يوم",
+    "last365": "آخر سنة"
+  },
+  "export": {
+    "title": "تصدير",
+    "csv": "تصدير CSV",
+    "excel": "تصدير Excel",
+    "downloading": "جاري التحميل...",
+    "failed": "فشل تصدير الملف"
+  },
+  "empty": {
+    "title": "لا توجد بيانات",
+    "description": "لا توجد مصروفات معتمدة في هذه الفترة"
+  },
+  "error": {
+    "title": "حدث خطأ",
+    "description": "تعذر تحميل بيانات التحليلات"
+  },
+  "loading": "جاري تحميل التحليلات..."
+}

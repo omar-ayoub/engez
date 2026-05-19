@@ -8,6 +8,12 @@ import Login from "@/pages/Login";
 import Home from "@/pages/Home";
 import CapturePage from "@/features/capture/pages/CapturePage";
 import DraftReviewPage from "@/features/capture/pages/DraftReviewPage";
+import ReviewQueuePage from "@/features/review/pages/ReviewQueuePage";
+import ReviewDetailPage from "@/features/review/pages/ReviewDetailPage";
+import AiMetricsPage from "@/features/review/pages/AiMetricsPage";
+import AnalyticsDashboard from "@/features/analytics/pages/AnalyticsDashboard";
+import IntegrationSettings from "@/features/integrations/pages/IntegrationSettings";
+import AnomalyMetrics from "@/features/integrations/pages/AnomalyMetrics";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -18,6 +24,22 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   if (isAuthenticated) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
+function AccountantRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const user = useAuthStore((s) => s.user);
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== "accountant" && user?.role !== "admin") return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const user = useAuthStore((s) => s.user);
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (user?.role !== "admin") return <Navigate to="/" replace />;
   return <>{children}</>;
 }
 
@@ -81,6 +103,54 @@ export default function App() {
             <ProtectedRoute>
               <DraftReviewPage />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/review"
+          element={
+            <AccountantRoute>
+              <ReviewQueuePage />
+            </AccountantRoute>
+          }
+        />
+        <Route
+          path="/review/:expenseId"
+          element={
+            <AccountantRoute>
+              <ReviewDetailPage />
+            </AccountantRoute>
+          }
+        />
+        <Route
+          path="/review/metrics"
+          element={
+            <AdminRoute>
+              <AiMetricsPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <AccountantRoute>
+              <AnalyticsDashboard />
+            </AccountantRoute>
+          }
+        />
+        <Route
+          path="/settings/integrations"
+          element={
+            <AccountantRoute>
+              <IntegrationSettings />
+            </AccountantRoute>
+          }
+        />
+        <Route
+          path="/settings/anomaly-metrics"
+          element={
+            <AdminRoute>
+              <AnomalyMetrics />
+            </AdminRoute>
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
