@@ -65,12 +65,43 @@ export interface SyncQueueItem {
   lastAttempt?: Date;
 }
 
+export interface ReviewQueueCache {
+  key: string;
+  companyId: string;
+  payload: string;
+  fetchedAt: Date;
+}
+
+export interface ReviewDetailCache {
+  expenseId: string;
+  companyId: string;
+  payload: string;
+  fetchedAt: Date;
+}
+
+export interface ReviewActionOutboxItem {
+  id: string;
+  companyId: string;
+  expenseId?: string;
+  type: "approve" | "reject" | "correct" | "bulk_approve" | "resubmit";
+  payload: string;
+  reviewVersion?: number;
+  status: "pending" | "syncing" | "conflict" | "failed";
+  retryCount: number;
+  createdAt: Date;
+  lastAttempt?: Date;
+  error?: string;
+}
+
 const db = new Dexie("EngezDB") as Dexie & {
   expenses: EntityTable<OfflineExpense, "id">;
   projects: EntityTable<OfflineProject, "id">;
   categories: EntityTable<OfflineCategory, "id">;
   syncQueue: EntityTable<SyncQueueItem, "id">;
   vendorCache: EntityTable<OfflineVendor, "id">;
+  reviewQueueCache: EntityTable<ReviewQueueCache, "key">;
+  reviewDetailCache: EntityTable<ReviewDetailCache, "expenseId">;
+  reviewActions: EntityTable<ReviewActionOutboxItem, "id">;
 };
 
 db.version(1).stores({
@@ -92,6 +123,17 @@ db.version(2).stores({
     expense.items = expense.items || "";
     expense.draftProcessed = expense.draftProcessed ?? false;
   });
+});
+
+db.version(3).stores({
+  expenses: "id, userId, projectId, categoryId, status, captureMode, createdAt, syncedAt",
+  projects: "id, companyId, code, isActive",
+  categories: "id, companyId, isActive",
+  syncQueue: "id, type, createdAt, retryCount",
+  vendorCache: "id, companyId, name, nameAr, taxRegistration",
+  reviewQueueCache: "key, companyId, fetchedAt",
+  reviewDetailCache: "expenseId, companyId, fetchedAt",
+  reviewActions: "id, companyId, expenseId, type, status, createdAt, retryCount",
 });
 
 export { db };

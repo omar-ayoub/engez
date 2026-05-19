@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_tenant_scope, require_admin
 from app.core.database import get_db
+from app.core.tenant import TenantScope
 from app.models.category import Category
 from app.models.user import User
 from app.schemas.category import CategoryCreate, CategoryListResponse, CategoryRead, CategoryUpdate
@@ -14,11 +15,11 @@ router = APIRouter(prefix="/categories", tags=["categories"])
 @router.get("/", response_model=CategoryListResponse)
 async def list_categories(
     is_active: bool | None = None,
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    query = select(Category).where(Category.company_id == company_id).order_by(Category.sort_order)
+    query = select(Category).where(Category.company_id == scope.company_id).order_by(Category.sort_order)
     if is_active is not None:
         query = query.where(Category.is_active == is_active)
 
@@ -29,13 +30,13 @@ async def list_categories(
 @router.post("/", response_model=CategoryRead, status_code=status.HTTP_201_CREATED)
 async def create_category(
     body: CategoryCreate,
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     existing = await db.execute(
         select(Category).where(
-            Category.company_id == company_id, Category.name == body.name
+            Category.company_id == scope.company_id, Category.name == body.name
         )
     )
     if existing.scalar_one_or_none():
@@ -51,7 +52,7 @@ async def create_category(
         name=body.name,
         name_ar=body.name_ar,
         sort_order=body.sort_order,
-        company_id=company_id,
+        company_id=scope.company_id,
     )
     db.add(category)
     await db.commit()
@@ -63,12 +64,12 @@ async def create_category(
 async def update_category(
     category_id: str,
     body: CategoryUpdate,
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
-        select(Category).where(Category.id == category_id, Category.company_id == company_id)
+        select(Category).where(Category.id == category_id, Category.company_id == scope.company_id)
     )
     category = result.scalar_one_or_none()
     if not category:

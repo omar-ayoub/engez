@@ -1,0 +1,85 @@
+{
+  "title": "Integration Settings",
+  "available": "Available Systems",
+  "loading": "Loading...",
+  "loadError": "Failed to load integration settings",
+  "configure": {
+    "title": "Configure Integration",
+    "systemName": "System",
+    "credentials": "Credentials",
+    "fieldMappings": "Field Mappings",
+    "testConnection": "Test Connection",
+    "save": "Save Settings",
+    "testing": "Testing connection...",
+    "success": "Connection successful",
+    "failed": "Connection failed",
+    "saveFailed": "Failed to save settings",
+    "retryFailed": "Retry failed",
+    "fields": {
+      "access_token": "Access Token",
+      "organization_id": "Organization ID",
+      "api_key": "API Key",
+      "url": "Server URL",
+      "database": "Database",
+      "username": "Username",
+      "password": "Password",
+      "client_id": "Client ID",
+      "client_secret": "Client Secret",
+      "refresh_token": "Refresh Token"
+    }
+  },
+  "status": {
+    "active": "Active",
+    "pending": "Pending",
+    "error": "Error",
+    "needs_reauth": "Needs Re-authentication",
+    "lastSync": "Last Sync",
+    "lastError": "Last Error",
+    "notConfigured": "Not Configured"
+  },
+  "exports": {
+    "title": "Export History",
+    "status": "Status",
+    "pending": "Pending",
+    "success": "Success",
+    "failed": "Failed",
+    "cancelled": "Cancelled",
+    "retry": "Retry",
+    "noExports": "No exports yet"
+  },
+  "systems": {
+    "zoho_books": {
+      "name": "Zoho Books",
+      "description": "Connect with Zoho Books accounting system"
+    },
+    "odoo": {
+      "name": "Odoo",
+      "description": "Connect with Odoo via XML-RPC"
+    },
+    "csv_daftra": {
+      "name": "Daftra (CSV)",
+      "description": "Export data as CSV for Daftra import"
+    }
+  },
+  "csvExport": {
+    "title": "CSV Export for Daftra",
+    "dateFrom": "Date From",
+    "dateTo": "Date To",
+    "download": "Download File"
+  },
+  "anomaly": {
+    "title": "Anomaly Detection Metrics",
+    "totalFlags": "Total Flags",
+    "avgPerExpense": "Avg Flags per Expense",
+    "rejectionCorrelation": "Rejection Correlation",
+    "byType": "Breakdown by Type",
+    "period": "Period: Last {{days}} days",
+    "fetchError": "Failed to load anomaly metrics",
+    "types": {
+      "duplicate_receipt": "Duplicate Receipt",
+      "statistical_outlier": "Statistical Outlier",
+      "high_velocity": "High Submission Rate",
+      "vendor_mismatch": "Vendor-Category Mismatch"
+    }
+  }
+}

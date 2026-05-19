@@ -143,10 +143,26 @@ async def seed_data(db_session: AsyncSession):
 
     await db_session.commit()
 
+    accountant = User(
+        id="accountant-001",
+        email="accountant@engez.app",
+        name="Accountant User",
+        name_ar="محاسب",
+        hashed_password=_fake_hash("accountant123"),
+        role="accountant",
+        is_active=True,
+        company_id=company.id,
+    )
+    db_session.add(accountant)
+    await db_session.flush()
+
+    await db_session.commit()
+
     return {
         "company": company,
         "user": user,
         "admin": admin,
+        "accountant": accountant,
         "category": category,
         "project": project,
         "vendor": vendor,
@@ -166,9 +182,10 @@ async def auth_client(db_session: AsyncSession, seed_data):
 
     from app.core.deps import get_current_active_user, get_tenant_scope
     from app.core.database import get_db
+    from app.core.tenant import TenantScope
 
     app.dependency_overrides[get_current_active_user] = lambda: seed_data["user"]
-    app.dependency_overrides[get_tenant_scope] = lambda: seed_data["company"].id
+    app.dependency_overrides[get_tenant_scope] = lambda: TenantScope(seed_data["company"].id)
     app.dependency_overrides[get_db] = override_get_db
 
     from unittest.mock import patch as _patch
@@ -177,6 +194,33 @@ async def auth_client(db_session: AsyncSession, seed_data):
 
     _voice_router.check_rate_limit = _AsyncMock()
     _receipt_router.check_rate_limit = _AsyncMock()
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        client.headers["Authorization"] = f"Bearer {token}"
+        yield client
+
+    app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture
+async def accountant_client(db_session: AsyncSession, seed_data):
+    token = create_access_token(
+        user_id=seed_data["accountant"].id,
+        company_id=seed_data["company"].id,
+        role=seed_data["accountant"].role,
+    )
+
+    async def override_get_db():
+        yield db_session
+
+    from app.core.deps import get_current_active_user, get_tenant_scope
+    from app.core.database import get_db
+    from app.core.tenant import TenantScope
+
+    app.dependency_overrides[get_current_active_user] = lambda: seed_data["accountant"]
+    app.dependency_overrides[get_tenant_scope] = lambda: TenantScope(seed_data["company"].id)
+    app.dependency_overrides[get_db] = override_get_db
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -199,9 +243,10 @@ async def admin_client(db_session: AsyncSession, seed_data):
 
     from app.core.deps import get_current_active_user, get_tenant_scope
     from app.core.database import get_db
+    from app.core.tenant import TenantScope
 
     app.dependency_overrides[get_current_active_user] = lambda: seed_data["admin"]
-    app.dependency_overrides[get_tenant_scope] = lambda: seed_data["company"].id
+    app.dependency_overrides[get_tenant_scope] = lambda: TenantScope(seed_data["company"].id)
     app.dependency_overrides[get_db] = override_get_db
 
     transport = ASGITransport(app=app)

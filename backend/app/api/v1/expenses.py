@@ -1,16 +1,20 @@
 import math
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.deps import get_current_active_user, get_tenant_scope
+from app.core.tenant import TenantScope
 from app.models.correction import CorrectionFeedback
 from app.models.expense import Expense
 from app.models.user import User
 from app.schemas.expense import ExpenseCreate, ExpenseListResponse, ExpensePatch, ExpenseResponse
+from app.services.anomaly import detect_anomalies
+from app.services.background import run_background
+from app.services.push_notifications import send_batched_accountant_notification
 
 router = APIRouter(prefix="/expenses", tags=["expenses"])
 
@@ -18,13 +22,14 @@ router = APIRouter(prefix="/expenses", tags=["expenses"])
 @router.post("/", response_model=ExpenseResponse, status_code=status.HTTP_201_CREATED)
 async def create_expense(
     body: ExpenseCreate,
-    company_id: str = Depends(get_tenant_scope),
+    background_tasks: BackgroundTasks,
+    scope: TenantScope = Depends(get_tenant_scope),
     user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
     existing_result = await db.execute(
         select(Expense).where(
-            Expense.company_id == company_id,
+            Expense.company_id == scope.company_id,
             Expense.offline_id == body.offline_id,
         )
     )
@@ -41,7 +46,7 @@ async def create_expense(
 
     expense = Expense(
         user_id=user.id,
-        company_id=company_id,
+        company_id=scope.company_id,
         offline_id=body.offline_id,
         amount=body.amount,
         currency=body.currency,
@@ -64,6 +69,16 @@ async def create_expense(
     db.add(expense)
     await db.commit()
     await db.refresh(expense)
+
+    background_tasks.add_task(
+        run_background, send_batched_accountant_notification, scope.company_id, 1,
+        task_name="notify_accountants",
+    )
+    background_tasks.add_task(
+        run_background, detect_anomalies, expense.id, scope.company_id,
+        task_name="detect_anomalies",
+    )
+
     return expense
 
 
@@ -76,12 +91,12 @@ async def list_expenses(
     project_id: str | None = None,
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    query = select(Expense).where(Expense.company_id == company_id)
-    count_query = select(func.count()).select_from(Expense).where(Expense.company_id == company_id)
+    query = select(Expense).where(Expense.company_id == scope.company_id)
+    count_query = select(func.count()).select_from(Expense).where(Expense.company_id == scope.company_id)
 
     if status_filter:
         query = query.where(Expense.status == status_filter)
@@ -122,12 +137,12 @@ async def list_expenses(
 async def update_expense(
     expense_id: str,
     body: ExpensePatch,
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
-        select(Expense).where(Expense.id == expense_id, Expense.company_id == company_id)
+        select(Expense).where(Expense.id == expense_id, Expense.company_id == scope.company_id)
     )
     expense = result.scalar_one_or_none()
     if not expense:
@@ -136,7 +151,6 @@ async def update_expense(
             detail={"detail": "المصروف غير موجود", "detail_en": "Expense not found"},
         )
 
-    # Ownership check: user must own the expense or be admin
     if str(expense.user_id) != str(user.id) and getattr(user, "role", None) != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -162,7 +176,7 @@ async def update_expense(
                 if ai_val is not None and str(update_data[field]) != str(ai_val):
                     feedback = CorrectionFeedback(
                         expense_id=expense.id,
-                        company_id=company_id,
+                        company_id=scope.company_id,
                         field_name=field,
                         ai_value=str(ai_val),
                         corrected_value=str(update_data[field]),
@@ -176,3 +190,6 @@ async def update_expense(
     await db.commit()
     await db.refresh(expense)
     return expense
+
+
+

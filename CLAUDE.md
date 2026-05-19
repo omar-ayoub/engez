@@ -48,6 +48,8 @@ frontend/
 specs/                 # Spec-Kit workflow artifacts per feature
   001-phase1-foundation/
   002-core-expense-capture/
+  003-review-desk/
+  004-integration-analytics/
     plan.md            # Current implementation plan (detailed architecture reference)
     spec.md            # Feature specification
     tasks.md           # Implementation tasks
@@ -140,3 +142,17 @@ cd backend && uv run pytest && cd ../frontend && pnpm build && pnpm lint && pnpm
 4. **Field-Worker UX** — 44px touch targets, <15s task completion, dark mode
 5. **Spec-Driven Development** — Spec-Kit workflow before feature code
 6. **Security by Default** — Signed URLs, rate limiting, JWT auth, input validation
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in GitHub Issues on `omar-ayoub/engez` via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default label vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout — one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.

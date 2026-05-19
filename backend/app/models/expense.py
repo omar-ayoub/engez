@@ -2,7 +2,7 @@ import uuid
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Numeric, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -15,6 +15,11 @@ class Expense(Base, TimestampMixin, TenantMixin):
         Index("ix_expenses_company_status", "company_id", "status"),
         Index("ix_expenses_company_project", "company_id", "project_id"),
         Index("ix_expenses_user_created", "user_id", "created_at"),
+        Index("ix_expenses_review_queue", "company_id", "status", "created_at"),
+        Index("ix_expenses_company_amount", "company_id", "amount"),
+        Index("ix_expenses_company_employee", "company_id", "user_id", "created_at"),
+        Index("ix_expenses_company_status_project_date", "company_id", "status", "project_id", "created_at"),
+        Index("ix_expenses_company_receipt_hash", "company_id", "receipt_hash"),
     )
 
     id: Mapped[str] = mapped_column(
@@ -45,3 +50,10 @@ class Expense(Base, TimestampMixin, TenantMixin):
         DateTime(timezone=True), nullable=True
     )
     offline_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    review_version: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    reviewed_by: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("users.id"), nullable=True
+    )
+    reviewed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )

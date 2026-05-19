@@ -71,3 +71,27 @@ def _content_type_for(ext: str) -> str:
         "png": "image/png",
     }
     return mapping.get(ext.lower(), "application/octet-stream")
+
+
+def extract_r2_key_from_url(url: str) -> str | None:
+    if not url:
+        return None
+    prefix = f"{settings.R2_PUBLIC_URL}/"
+    if url.startswith(prefix):
+        return url[len(prefix):]
+    if "/" in url:
+        return url.split("/", 3)[-1] if url.count("/") >= 3 else None
+    return None
+
+
+async def refresh_receipt_signed_url(receipt_url: str | None, expires_seconds: int = 3600) -> tuple[str, int] | None:
+    if not receipt_url:
+        return None
+    if not settings.R2_ACCOUNT_ID or not settings.R2_ACCESS_KEY or not settings.R2_SECRET_KEY:
+        logger.warning("R2 not configured, cannot refresh signed URL")
+        return None
+    key = extract_r2_key_from_url(receipt_url)
+    if not key:
+        return None
+    signed = await asyncio.to_thread(generate_signed_url, key, expires_seconds)
+    return (signed, expires_seconds)

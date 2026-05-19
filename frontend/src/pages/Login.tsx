@@ -50,11 +50,17 @@ export default function Login() {
       });
 
       if (!res.ok) {
-        await res.json();
         if (res.status === 423) {
           setError(t("auth.accountLocked"));
-        } else {
+        } else if (res.status === 401) {
           setError(t("auth.invalidCredentials"));
+        } else {
+          const errData = await res.json().catch(() => null);
+          const isArabic = i18n.language === "ar";
+          const msg = isArabic
+            ? errData?.detail?.detail || errData?.detail?.detail_en || t("common.error")
+            : errData?.detail?.detail_en || errData?.detail?.detail || t("common.error");
+          setError(msg);
         }
         return;
       }
@@ -100,9 +106,10 @@ export default function Login() {
                 autoComplete="email"
                 {...register("email", { required: true })}
                 aria-invalid={errors.email ? "true" : undefined}
+                aria-describedby={errors.email ? "email-error" : undefined}
               />
               {errors.email && (
-                <p className="text-xs text-destructive">
+                <p id="email-error" className="text-xs text-destructive">
                   {t("validation.required")}
                 </p>
               )}
@@ -118,9 +125,10 @@ export default function Login() {
                 autoComplete="current-password"
                 {...register("password", { required: true })}
                 aria-invalid={errors.password ? "true" : undefined}
+                aria-describedby={errors.password ? "password-error" : undefined}
               />
               {errors.password && (
-                <p className="text-xs text-destructive">
+                <p id="password-error" className="text-xs text-destructive">
                   {t("validation.required")}
                 </p>
               )}
@@ -138,7 +146,7 @@ export default function Login() {
 
             <Button
               type="submit"
-              className="touch-target w-full bg-brand font-semibold text-white hover:bg-brand-light"
+              className="touch-target w-full bg-brand font-semibold text-white hover:bg-brand-light active:scale-[0.98] transition-[colors,transform]"
               disabled={loading}
             >
               {loading ? (

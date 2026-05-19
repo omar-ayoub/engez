@@ -108,15 +108,28 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
       };
 
       await db.expenses.put(expense as OfflineExpense);
+
+      const syncPayload = {
+        offline_id: id,
+        amount: values.amount,
+        currency: values.currency,
+        vendor: values.vendor || "",
+        items: values.items || "",
+        category_id: values.categoryId || null,
+        project_id: values.projectId || null,
+        notes: values.notes || null,
+        capture_mode: values.captureMode,
+        eta_verified: false,
+      };
       await db.syncQueue.add({
         id: crypto.randomUUID(),
         type: "expense",
-        payload: JSON.stringify({ ...expense, offline_id: id }),
+        payload: JSON.stringify(syncPayload),
         retryCount: 0,
         createdAt: now,
       });
 
-      if ("serviceWorker" in navigator) {
+      if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
         const sw = await navigator.serviceWorker.ready;
         if ("sync" in sw) {
           (sw as unknown as { sync: { register: (tag: string) => void } }).sync.register("expense-sync");

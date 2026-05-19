@@ -7,7 +7,9 @@
     "home": "الرئيسية",
     "expenses": "المصروفات",
     "projects": "المشاريع",
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "analytics": "التحليلات",
+    "integrations": "الربط"
   },
   "expense": {
     "new": "مصروف جديد",
