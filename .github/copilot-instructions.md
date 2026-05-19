@@ -1,57 +1,6 @@
-# Product Identity
+# ENGEZ Design Context
 
-## Mode
-product
-
-## Name
-ENGEZ (إنجز) — Field Expense PWA
-
-## Voice
-Professional, calm, and efficient. Bilingual (Arabic-first, English-second).
-Direct and trustworthy — this handles money. Never verbose, never alarming.
-Use short, clear sentences. Prefer reassurance over warnings.
-
-## Typography
-- Primary: IBM Plex Arabic (Arabic text)
-- Secondary: IBM Plex Sans (English text, numbers)
-- Monospace: IBM Plex Mono (amounts, codes, invoice numbers)
-
-## Color System
-- Brand: Deep teal (#0D9488) — trust, calm, finance
-- Brand light: Teal (#14B8A6) — hover states, active elements
-- Accent: Amber (#F59E0B) — pending states, gentle warnings
-- Success: Emerald (#10B981) — approved, synced, confirmed
-- Danger: Rose (#F43F5E) — rejected, fraud flags, errors
-- Surface: Neutral grays with low saturation — dark mode default
-- Use muted, desaturated tones for backgrounds. Reserve vivid colors
-  for status indicators and primary actions only.
-
-## Anti-References
-- No purple gradients
-- No card-in-card nesting
-- No decorative illustrations on functional screens
-- No rounded-square icon tiles above headings
-- No Inter font
-- No dense data tables on mobile — use cards or lists instead
-- No multi-step wizards when a single screen suffices
-- No alert/warning styling for routine information
-- No skeleton screens longer than 200ms — show real content or nothing
-
-## Design Constraints
-- RTL-first: all layouts must work in Arabic RTL
-- Touch targets: minimum 44x44px (field workers wear gloves)
-- High contrast: receipts viewed in outdoor sunlight
-- Minimal navigation: 2 taps maximum to complete any primary action
-- Dark mode default: reduces battery on OLED field devices
-- WCAG AA minimum for all text and interactive elements
-- Status indicators must not rely solely on red/green — use icons or
-  labels alongside color to accommodate color blindness
-- Respect prefers-reduced-motion: no essential animations, decorative
-  motion must be disableable
-
-## Design Context
-
-### Users
+## Users
 Field workers on Egyptian construction sites, outdoor events, and freight
 yards. They work in harsh conditions — bright sunlight, dust, gloves, poor
 connectivity. They need to log expenses as fast as sending a WhatsApp voice
@@ -64,7 +13,7 @@ reject actions.
 
 Admins manage companies, users, and projects. They need simple CRUD screens.
 
-### Brand Personality
+## Brand Personality
 Calm. Simple. Swift.
 
 ENGEZ should feel like a trusted pocket notebook — always ready, never
@@ -72,7 +21,7 @@ in the way. The interface should make users feel relaxed, not anxious.
 Every screen should have one obvious action. Silence is preferred over
 noise — no unnecessary badges, counters, or status bars.
 
-### Aesthetic Direction
+## Aesthetic Direction
 Calm utility. Clean, spacious, generous whitespace. Soft dark surfaces
 with subtle elevation. Large, confident typography. Minimal chrome.
 
@@ -90,7 +39,7 @@ for expenses: open, capture, done. Borrow WhatsApp's patterns:
 Secondary references: Wise (TransferWise) for calm finance UI, Linear
 for minimal dark interfaces.
 
-### Design Principles
+## Design Principles
 
 1. **One Screen, One Job** — Each screen does exactly one thing. No tabs,
    no accordions, no "see more" links. If it needs explanation, simplify it.
@@ -110,3 +59,33 @@ for minimal dark interfaces.
 5. **Trust Through Transparency** — Show sync status honestly. Show
    amounts clearly. Never hide information that affects money. The user
    should always know: did my expense go through?
+
+## Design Constraints
+- RTL-first: all layouts must work in Arabic RTL
+- Touch targets: minimum 44x44px (field workers wear gloves)
+- High contrast: receipts viewed in outdoor sunlight
+- Dark mode default: reduces battery on OLED field devices
+- WCAG AA minimum for all text and interactive elements
+- No color-only status indicators — use icons/labels alongside color
+
+## Typography
+- Primary: IBM Plex Arabic (Arabic text)
+- Secondary: IBM Plex Sans (English text, numbers)
+- Monospace: IBM Plex Mono (amounts, codes, invoice numbers)
+
+## Color System
+- Brand: Deep teal (#0D9488) — trust, calm, finance
+- Brand light: Teal (#14B8A6) — hover states, active elements
+- Accent: Amber (#F59E0B) — pending states, gentle warnings
+- Success: Emerald (#10B981) — approved, synced, confirmed
+- Danger: Rose (#F43F5E) — rejected, fraud flags, errors
+- Surface: Neutral grays with low saturation — dark mode default
+
+## Anti-References
+- No purple gradients
+- No card-in-card nesting
+- No decorative illustrations on functional screens
+- No Inter font (IBM Plex only)
+- No dense data tables on mobile — use cards or lists
+- No multi-step wizards when a single screen suffices
+- No skeleton screens longer than 200ms
