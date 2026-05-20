@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_tenant_scope, require_admin
 from app.core.database import get_db
+from app.core.tenant import TenantScope
 from app.models.project import Project
 from app.models.user import User
 from app.schemas.project import PaginatedProjects, ProjectCreate, ProjectRead, ProjectUpdate
@@ -16,12 +17,12 @@ async def list_projects(
     is_active: bool | None = None,
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    query = select(Project).where(Project.company_id == company_id)
-    count_query = select(func.count()).select_from(Project).where(Project.company_id == company_id)
+    query = select(Project).where(Project.company_id == scope.company_id)
+    count_query = select(func.count()).select_from(Project).where(Project.company_id == scope.company_id)
 
     if is_active is not None:
         query = query.where(Project.is_active == is_active)
@@ -40,13 +41,13 @@ async def list_projects(
 @router.post("/", response_model=ProjectRead, status_code=status.HTTP_201_CREATED)
 async def create_project(
     body: ProjectCreate,
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     existing = await db.execute(
         select(Project).where(
-            Project.company_id == company_id, Project.code == body.code
+            Project.company_id == scope.company_id, Project.code == body.code
         )
     )
     if existing.scalar_one_or_none():
@@ -63,7 +64,7 @@ async def create_project(
         name_ar=body.name_ar,
         code=body.code,
         budget=body.budget,
-        company_id=company_id,
+        company_id=scope.company_id,
     )
     db.add(project)
     await db.commit()
@@ -75,12 +76,12 @@ async def create_project(
 async def update_project(
     project_id: str,
     body: ProjectUpdate,
-    company_id: str = Depends(get_tenant_scope),
+    scope: TenantScope = Depends(get_tenant_scope),
     admin: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
-        select(Project).where(Project.id == project_id, Project.company_id == company_id)
+        select(Project).where(Project.id == project_id, Project.company_id == scope.company_id)
     )
     project = result.scalar_one_or_none()
     if not project:

@@ -1,0 +1,78 @@
+{
+  "voice": {
+    "record": "Record Voice",
+    "recording": "Recording...",
+    "stop": "Stop",
+    "processing": "Processing...",
+    "noPermission": "Cannot access microphone",
+    "noSpeech": "No speech detected",
+    "networkError": "Network error",
+    "maxDuration": "Max 60 seconds"
+  },
+  "receipt": {
+    "capture": "Capture Receipt",
+    "retake": "Retake",
+    "processing": "Processing...",
+    "qrDetected": "E-invoice QR detected",
+    "noCamera": "Cannot access camera",
+    "unreadable": "Could not read receipt. Please retake",
+    "qr": "QR",
+    "process": "Process Receipt"
+  },
+  "form": {
+    "amount": "Amount",
+    "vendor": "Vendor",
+    "items": "Items",
+    "category": "Category",
+    "project": "Project",
+    "notes": "Notes",
+    "submit": "Submit Expense",
+    "submitting": "Submitting...",
+    "saved": "Auto-saved",
+    "vendorPlaceholder": "Start typing vendor name",
+    "itemsPlaceholder": "What was purchased?"
+  },
+  "categories": {
+    "materials": "Materials",
+    "transport": "Transport",
+    "fuel": "Fuel",
+    "food": "Food",
+    "equipment": "Equipment",
+    "permits": "Permits",
+    "maintenance": "Maintenance",
+    "other": "Other"
+  },
+  "confidence": {
+    "high": "High confidence",
+    "medium": "Medium confidence",
+    "low": "Needs review",
+    "label": "{{score}}% confidence"
+  },
+  "sync": {
+    "pending": "Pending sync",
+    "syncing": "Syncing...",
+    "synced": "Synced",
+    "offline": "Offline — saving locally",
+    "draftsReady": "{{count}} drafts ready for review",
+    "draftsUnprocessed": "{{count}} being processed",
+    "reviewDrafts": "Review Drafts",
+    "discard": "Discard",
+    "delete": "Delete draft",
+    "noDrafts": "All drafts reviewed",
+    "retry": "Retry",
+    "confirmDiscard": "Discard this draft? This cannot be undone.",
+    "storageWarning": "Storage almost full — sync pending expenses"
+  },
+  "modes": {
+    "voice": "Voice",
+    "receipt": "Receipt",
+    "combined": "Voice + Receipt",
+    "manual": "Manual"
+  },
+  "errors": {
+    "rateLimit": "Rate limit exceeded. Please try again later",
+    "emptyExtraction": "No data recognized",
+    "timeout": "Connection timed out",
+    "offline": "No internet connection"
+  }
+}

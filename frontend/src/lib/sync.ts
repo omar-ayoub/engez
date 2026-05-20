@@ -1,116 +1,63 @@
-import { db, type SyncQueueItem } from "./db";
+export {
+  enqueueExpense as addToQueue,
+  registerBackgroundSync,
+  init as initSync,
+  triggerSync as processQueue,
+} from "./sync-engine";
 
-function generateId(): string {
-  return crypto.randomUUID();
-}
+import { db, type OfflineVendor } from "./db";
 
-export async function addToQueue(
-  type: "expense" | "expense_update",
-  payload: Record<string, unknown>
-): Promise<void> {
-  const item: SyncQueueItem = {
-    id: generateId(),
-    type,
-    payload: JSON.stringify(payload),
-    retryCount: 0,
-    createdAt: new Date(),
-  };
-  await db.syncQueue.add(item);
-}
-
-async function processQueue(): Promise<void> {
-  const items = await db.syncQueue.orderBy("createdAt").toArray();
-
-  for (const item of items) {
-    try {
-      const payload = JSON.parse(item.payload);
-
-      if (item.type === "expense") {
-        const res = await fetch("/api/v1/expenses", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(payload),
-        });
-
-        if (res.status === 404) {
-          continue;
-        }
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        await db.syncQueue.delete(item.id);
-      } else if (item.type === "expense_update") {
-        const res = await fetch(`/api/v1/expenses/${payload.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(payload),
-        });
-
-        if (res.status === 404) {
-          continue;
-        }
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        await db.syncQueue.delete(item.id);
-      }
-    } catch {
-      await db.syncQueue.update(item.id, {
-        retryCount: item.retryCount + 1,
-        lastAttempt: new Date(),
-      });
-
-      if (item.retryCount + 1 > 10) {
-        await db.expenses.update(payload_id_from_item(item), {
-          syncError: "Max retries exceeded",
-        });
-      }
-    }
+export async function syncVendorCache(token?: string): Promise<void> {
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
   }
-}
 
-function payload_id_from_item(item: SyncQueueItem): string {
+  let res: Response;
   try {
-    const payload = JSON.parse(item.payload);
-    return payload.id || payload.offlineId || "";
-  } catch {
-    return "";
-  }
-}
-
-export function registerBackgroundSync(): void {
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.ready.then((sw) => {
-      if ("sync" in sw) {
-        (sw as unknown as { sync: { register: (tag: string) => void } }).sync.register("engez-sync");
-      }
+    res = await fetch("/api/v1/vendors", {
+      headers,
+      credentials: "include",
     });
+  } catch {
+    return; // Network error — silently skip, will retry on next interval
+  }
+
+  if (!res.ok) return;
+
+  const data = await res.json();
+  const vendors: OfflineVendor[] = (data.vendors || []).map(
+    (v: Record<string, unknown>) => ({
+      id: v.id as string,
+      companyId: v.company_id as string,
+      name: v.name as string,
+      nameAr: (v.name_ar as string) || undefined,
+      taxRegistration: (v.tax_registration as string) || undefined,
+      categoryHint: (v.category_hint as string) || undefined,
+    })
+  );
+
+  if (vendors.length > 0) {
+    await db.vendorCache.bulkPut(vendors);
   }
 }
 
-let pollingInterval: ReturnType<typeof setInterval> | null = null;
+let vendorSyncInterval: ReturnType<typeof setInterval> | null = null;
 
-export async function startPollingFallback(): Promise<void> {
-  let hasSync = false;
-  if ("serviceWorker" in navigator) {
-    const sw = await navigator.serviceWorker.ready;
-    hasSync = "sync" in sw;
-  }
-
-  if (!hasSync && !pollingInterval) {
-    pollingInterval = setInterval(processQueue, 30000);
+export function startVendorSync(token?: string): void {
+  syncVendorCache(token);
+  if (!vendorSyncInterval) {
+    vendorSyncInterval = setInterval(() => syncVendorCache(token), 15 * 60 * 1000);
   }
 }
 
-export function initSync(): void {
-  registerBackgroundSync();
-  startPollingFallback();
-
-  window.addEventListener("online", () => {
-    processQueue();
-  });
+export function stopVendorSync(): void {
+  if (vendorSyncInterval) {
+    clearInterval(vendorSyncInterval);
+    vendorSyncInterval = null;
+  }
 }
 
-export { processQueue };
+export function startPollingFallback(): void {
+  // No-op: polling handled by sync-engine
+}

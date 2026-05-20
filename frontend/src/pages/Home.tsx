@@ -21,7 +21,13 @@ export default function Home() {
   const navigate = useNavigate();
   const { isOnline } = useOnlineStatus();
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="flex min-h-svh items-center justify-center bg-background">
+        <div className="size-6 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+      </div>
+    );
+  }
 
   const displayName = i18n.language === "ar" ? user.name_ar : user.name;
   const companyName =
@@ -44,7 +50,7 @@ export default function Home() {
             {companyName}
           </p>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <StatusIndicator
             isOnline={isOnline}
             label={isOnline ? t("status.online") : t("status.offline")}
@@ -70,7 +76,10 @@ export default function Home() {
 
       {/* Main content */}
       <main className="flex flex-1 flex-col items-center justify-center p-6">
-        <Button className="touch-target h-14 gap-2 rounded-2xl bg-brand px-8 text-lg font-semibold text-white hover:bg-brand-light">
+        <Button
+          onClick={() => navigate("/capture")}
+          className="touch-target h-14 gap-2 rounded-2xl bg-brand px-8 text-lg font-semibold text-white hover:bg-brand-light active:scale-[0.97] transition-[colors,transform]"
+        >
           <Plus className="size-5" />
           {t("expense.new")}
         </Button>
@@ -81,9 +90,9 @@ export default function Home() {
         className="flex items-center justify-around border-t border-border px-2 py-1"
         style={{ paddingBottom: "max(0.25rem, env(safe-area-inset-bottom))" }}
       >
-        <NavItem icon={HomeIcon} label={t("nav.home")} active />
-        <NavItem icon={Receipt} label={t("nav.expenses")} />
-        <NavItem icon={Settings} label={t("nav.settings")} />
+        <NavItem icon={HomeIcon} label={t("nav.home")} active onPress={() => navigate("/")} />
+        <NavItem icon={Receipt} label={t("nav.expenses")} onPress={() => navigate("/drafts")} />
+        <NavItem icon={Settings} label={t("nav.settings")} onPress={() => navigate("/settings/integrations")} />
       </nav>
     </div>
   );
@@ -116,13 +125,17 @@ function NavItem({
   icon: Icon,
   label,
   active = false,
+  onPress,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   active?: boolean;
+  onPress?: () => void;
 }) {
   return (
     <button
+      onClick={onPress}
+      aria-current={active ? "page" : undefined}
       className={`touch-target flex flex-col items-center justify-center gap-0.5 rounded-lg px-4 py-2 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
         active
           ? "font-medium text-brand"

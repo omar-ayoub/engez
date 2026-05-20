@@ -19,8 +19,12 @@ class Settings(BaseSettings):
     VAPID_PRIVATE_KEY: str = ""
     VAPID_PUBLIC_KEY: str = ""
     VAPID_CLAIMS_EMAIL: str = ""
+    AI_RATE_LIMIT_VOICE: int = 100
+    AI_RATE_LIMIT_RECEIPT: int = 100
     SEED_ADMIN_EMAIL: str = "admin@engez.app"
     SEED_ADMIN_PASSWORD: str = "changeme123"
+    CREDENTIAL_MASTER_KEY: str = ""
+    BULK_APPROVE_CONFIDENCE_THRESHOLD: float = 0.8
 
     model_config = {"env_file": ".env", "case_sensitive": True}
 

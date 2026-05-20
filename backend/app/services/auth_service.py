@@ -10,7 +10,6 @@ from app.core.security import (
     verify_password,
     verify_refresh_token,
 )
-from app.models.company import Company
 from app.models.user import User
 
 

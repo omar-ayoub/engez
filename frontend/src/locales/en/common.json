@@ -1,0 +1,83 @@
+{
+  "app": {
+    "name": "ENGEZ",
+    "tagline": "Field Expense Management"
+  },
+  "nav": {
+    "home": "Home",
+    "expenses": "Expenses",
+    "projects": "Projects",
+    "settings": "Settings",
+    "analytics": "Analytics",
+    "integrations": "Integrations"
+  },
+  "expense": {
+    "new": "New Expense",
+    "amount": "Amount",
+    "category": "Category",
+    "vendor": "Vendor",
+    "project": "Project",
+    "notes": "Notes",
+    "submit": "Submit",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "voice": "Voice Recording",
+    "camera": "Receipt Photo",
+    "savedLocally": "Saved locally — will sync when connected",
+    "synced": "Synced",
+    "etaVerified": "E-invoice verified"
+  },
+  "auth": {
+    "login": "Login",
+    "email": "Email",
+    "password": "Password",
+    "logout": "Logout",
+    "invalidCredentials": "Invalid email or password",
+    "accountLocked": "Account locked. Try again in 15 minutes",
+    "biometric": "Biometric Login"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "syncing": "Syncing..."
+  },
+  "roles": {
+    "field_worker": "Field Worker",
+    "accountant": "Accountant",
+    "admin": "Admin"
+  },
+  "admin": {
+    "users": "Users",
+    "companies": "Companies",
+    "projects": "Projects",
+    "categories": "Categories",
+    "create": "Create",
+    "edit": "Edit"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "search": "Search",
+    "filter": "Filter",
+    "noResults": "No results",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "delete": "Delete"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "minLength": "Must be at least {{count}} characters"
+  },
+  "home": {
+    "welcome": "Hello, {{name}}"
+  },
+  "language": {
+    "toggle": "العربية",
+    "current": "English"
+  }
+}

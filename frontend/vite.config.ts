@@ -9,6 +9,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      strategies: "injectManifest",
+      srcDir: "src/sw",
+      filename: "service-worker.ts",
       registerType: "autoUpdate",
       includeAssets: [
         "favicon.svg",
@@ -45,30 +48,10 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
+      injectManifest: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        runtimeCaching: [
-          {
-            urlPattern: /^\/api\/v1/,
-            handler: "NetworkFirst",
-            options: {
-              networkTimeoutSeconds: 5,
-              cacheName: "api-cache",
-              expiration: { maxEntries: 100, maxAgeSeconds: 300 },
-            },
-          },
-          {
-            urlPattern:
-              /^https:\/\/fonts\.gstatic\.com\/.*\.(woff2|ttf|otf)$/,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "font-cache",
-              expiration: { maxAgeSeconds: 365 * 24 * 60 * 60 },
-            },
-          },
-        ],
       },
-      devOptions: { enabled: true },
+      devOptions: { enabled: false, type: "module" },
     }),
   ],
   resolve: {

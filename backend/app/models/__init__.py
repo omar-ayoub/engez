@@ -5,3 +5,6 @@ from app.models.category import Category  # noqa: F401
 from app.models.expense import Expense  # noqa: F401
 from app.models.correction import CorrectionFeedback  # noqa: F401
 from app.models.vendor_cache import VendorCache  # noqa: F401
+from app.models.review_audit_log import ReviewAuditLog  # noqa: F401
+from app.models.integration import IntegrationConfig  # noqa: F401
+from app.models.export_record import ExportRecord  # noqa: F401
