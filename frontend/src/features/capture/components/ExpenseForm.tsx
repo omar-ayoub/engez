@@ -36,7 +36,10 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
         if (e.vendor) setValue("vendor", e.vendor);
         if (e.items) setValue("items", e.items);
         if (e.currency) setValue("currency", e.currency);
-        if (e.category) setValue("captureMode", "voice");
+        if (e.category) {
+          setValue("categoryId", e.category);
+          setSelectedCategory(e.category);
+        }
         if (e.confidence) setConfidence(e.confidence as Record<string, number>);
       } else if (!result.transcript) {
         setError(t("voice.noSpeech"));
@@ -59,7 +62,10 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
         if (e.items) setValue("items", e.items);
         if (e.vendor_tax_reg && e.vendor) setValue("vendor", e.vendor);
         if (e.date) setValue("notes", e.date);
-        if (e.category) setValue("captureMode", "receipt");
+        if (e.category) {
+          setValue("categoryId", e.category);
+          setSelectedCategory(e.category);
+        }
         if (e.confidence) setConfidence(e.confidence as Record<string, number>);
       } else {
         setError(t("receipt.unreadable"));
@@ -143,7 +149,7 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
           </label>
           {confidence?.vendor != null && <ConfidenceBadge score={confidence.vendor} />}
         </div>
-        <VendorAutocomplete onChange={handleVendorChange} value="" />
+        <VendorAutocomplete onChange={handleVendorChange} value={form.watch("vendor")} />
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -178,7 +184,7 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
         </label>
         <select
           id="projectId"
-          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30 md:text-sm"
+          className="flex min-h-touch w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30 md:text-sm"
           {...register("projectId")}
         >
           <option value="">{t("form.project")}</option>
@@ -200,7 +206,7 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="h-14 w-full rounded-2xl bg-brand-surface text-lg font-semibold text-white hover:bg-brand focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          className="h-14 w-full rounded-2xl bg-brand text-lg font-semibold text-white hover:bg-brand-light active:scale-[0.97] transition-[colors,transform] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
           {isSubmitting ? t("form.submitting") : t("form.submit")}
         </Button>

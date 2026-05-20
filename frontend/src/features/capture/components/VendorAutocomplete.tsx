@@ -9,9 +9,9 @@ interface VendorAutocompleteProps {
   onChange: (value: string, vendor?: OfflineVendor) => void;
 }
 
-export default function VendorAutocomplete({ onChange }: VendorAutocompleteProps) {
+export default function VendorAutocomplete({ value, onChange }: VendorAutocompleteProps) {
   const { t } = useTranslation("capture");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(value || "");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -34,6 +34,10 @@ export default function VendorAutocomplete({ onChange }: VendorAutocompleteProps
         (v.nameAr && v.nameAr.includes(query))
     ).slice(0, 8);
   }, [query, vendors]);
+
+  useEffect(() => {
+    if (value && value !== query) setQuery(value);
+  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -88,7 +92,7 @@ export default function VendorAutocomplete({ onChange }: VendorAutocompleteProps
         aria-expanded={isOpen && filtered.length > 0}
         aria-autocomplete="list"
         aria-controls="vendor-listbox"
-        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30 md:text-sm"
+        className="flex min-h-touch w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30 md:text-sm"
       />
       {isOpen && filtered.length > 0 && (
         <ul id="vendor-listbox" role="listbox" aria-live="polite" className="absolute inset-x-0 top-full z-50 mt-1 max-h-48 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg">
@@ -101,7 +105,7 @@ export default function VendorAutocomplete({ onChange }: VendorAutocompleteProps
                   i === selectedIndex ? "bg-accent" : "hover:bg-accent/50"
                 }`}
               >
-                <span className="flex-1 text-start">
+                <span className="flex-1 truncate text-start">
                   {vendor.nameAr || vendor.name}
                 </span>
                 {vendor.nameAr && vendor.nameAr !== vendor.name && (
