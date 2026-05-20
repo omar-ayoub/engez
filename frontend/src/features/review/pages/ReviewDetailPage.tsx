@@ -79,7 +79,7 @@ export default function ReviewDetailPage() {
             onClick={() => navigate("/review")}
             className="text-gray-400 hover:text-white transition-colors min-h-[44px] flex items-center gap-2"
           >
-            <span aria-hidden="true">→</span>
+            <span aria-hidden="true" className="rtl:rotate-180 inline-block">→</span>
             {t("detail.backToQueue")}
           </button>
           <ConfidenceBadge

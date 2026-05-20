@@ -97,7 +97,7 @@ async def send_decision_notification_by_expense(
 ) -> None:
     from app.models.expense import Expense
 
-    result = await db.execute(select(Expense).where(Expense.id == expense_id))
+    result = await db.execute(select(Expense).where(Expense.id == expense_id, Expense.company_id == company_id))
     expense = result.scalar_one_or_none()
     if expense:
         await send_decision_notification(

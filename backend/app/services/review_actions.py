@@ -280,6 +280,8 @@ async def resubmit(
     expense.reviewed_by = None
     expense.reviewed_at = None
     expense.rejection_reason = None
+    if changes:
+        expense.anomaly_flags = None
 
     db.add(_create_audit(
         company_id, expense.id, user_id, "resubmit",
