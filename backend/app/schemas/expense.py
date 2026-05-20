@@ -1,11 +1,15 @@
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
+
+CAPTURE_MODES = Literal["voice", "receipt", "combined", "manual"]
 
 
 class ExpenseCreate(BaseModel):
     offline_id: str
-    amount: float
+    amount: float = Field(gt=0)
     currency: str = "EGP"
     vendor: str
     vendor_tax_reg: str | None = None
@@ -13,7 +17,7 @@ class ExpenseCreate(BaseModel):
     category_id: str | None = None
     project_id: str | None = None
     notes: str | None = None
-    capture_mode: str = "manual"
+    capture_mode: CAPTURE_MODES = "manual"
     voice_url: str | None = None
     voice_transcript: str | None = None
     receipt_url: str | None = None

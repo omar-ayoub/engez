@@ -15,7 +15,9 @@
     "processing": "Processing...",
     "qrDetected": "E-invoice QR detected",
     "noCamera": "Cannot access camera",
-    "unreadable": "Could not read receipt. Please retake"
+    "unreadable": "Could not read receipt. Please retake",
+    "qr": "QR",
+    "process": "Process Receipt"
   },
   "form": {
     "amount": "Amount",
@@ -43,7 +45,8 @@
   "confidence": {
     "high": "High confidence",
     "medium": "Medium confidence",
-    "low": "Needs review"
+    "low": "Needs review",
+    "label": "{{score}}% confidence"
   },
   "sync": {
     "pending": "Pending sync",
@@ -54,7 +57,10 @@
     "draftsUnprocessed": "{{count}} being processed",
     "reviewDrafts": "Review Drafts",
     "discard": "Discard",
+    "delete": "Delete draft",
+    "noDrafts": "All drafts reviewed",
     "retry": "Retry",
+    "confirmDiscard": "Discard this draft? This cannot be undone.",
     "storageWarning": "Storage almost full — sync pending expenses"
   },
   "modes": {

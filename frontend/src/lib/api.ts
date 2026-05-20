@@ -52,7 +52,7 @@ export async function request(
   if (auth.accessToken) {
     headers.set("Authorization", `Bearer ${auth.accessToken}`);
   }
-  if (!headers.has("Content-Type") && options.body) {
+  if (!headers.has("Content-Type") && options.body && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db, type OfflineExpense } from "@/lib/db";
 
@@ -8,6 +8,7 @@ interface UseDraftProcessorReturn {
 }
 
 export function useDraftProcessor(): UseDraftProcessorReturn {
+  const isProcessingRef = useRef(false);
   const unprocessedDrafts = useLiveQuery(
     () =>
       db.expenses
@@ -38,7 +39,8 @@ export function useDraftProcessor(): UseDraftProcessorReturn {
   );
 
   const processDrafts = useCallback(async () => {
-    if (!navigator.onLine || unprocessedDrafts.length === 0) return;
+    if (!navigator.onLine || unprocessedDrafts.length === 0 || isProcessingRef.current) return;
+    isProcessingRef.current = true;
 
     for (const draft of unprocessedDrafts) {
       try {
@@ -99,6 +101,7 @@ export function useDraftProcessor(): UseDraftProcessorReturn {
         });
       }
     }
+    isProcessingRef.current = false;
   }, [unprocessedDrafts]);
 
   useEffect(() => {

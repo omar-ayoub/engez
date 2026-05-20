@@ -23,6 +23,7 @@ export default function DraftReviewPage() {
   );
 
   const handleDiscard = async (id: string) => {
+    if (!window.confirm(t("sync.confirmDiscard"))) return;
     await db.expenses.delete(id);
   };
 
@@ -45,7 +46,8 @@ export default function DraftReviewPage() {
           <button
             type="button"
             onClick={() => setSelectedDraft(null)}
-            className="touch-target inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground"
+            className="touch-target inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={t("form.back", { defaultValue: "Back" })}
           >
             <ArrowRight className="size-5 ltr:rotate-180" />
           </button>

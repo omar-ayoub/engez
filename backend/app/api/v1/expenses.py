@@ -108,11 +108,23 @@ async def list_expenses(
         query = query.where(Expense.project_id == project_id)
         count_query = count_query.where(Expense.project_id == project_id)
     if from_date:
-        from_dt = datetime.fromisoformat(from_date).replace(hour=0, minute=0, second=0)
+        try:
+            from_dt = datetime.fromisoformat(from_date).replace(hour=0, minute=0, second=0)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail={"detail": "تنسيق تاريخ غير صالح", "detail_en": "Invalid date format for from_date"},
+            )
         query = query.where(Expense.created_at >= from_dt)
         count_query = count_query.where(Expense.created_at >= from_dt)
     if to_date:
-        to_dt = datetime.fromisoformat(to_date).replace(hour=23, minute=59, second=59)
+        try:
+            to_dt = datetime.fromisoformat(to_date).replace(hour=23, minute=59, second=59)
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail={"detail": "تنسيق تاريخ غير صالح", "detail_en": "Invalid date format for to_date"},
+            )
         query = query.where(Expense.created_at <= to_dt)
         count_query = count_query.where(Expense.created_at <= to_dt)
 

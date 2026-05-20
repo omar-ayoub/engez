@@ -55,8 +55,8 @@ export default function VoiceRecordButton({ onExtraction, onError }: VoiceRecord
         });
 
         if (!res.ok) {
-          const err = await res.json();
-          onError?.(err.detail || err.detail_en || t("voice.networkError"));
+          const err = await res.json().catch(() => null);
+          onError?.(err?.detail || err?.detail_en || t("voice.networkError"));
           return;
         }
 

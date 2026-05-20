@@ -57,8 +57,8 @@ export default function ReceiptCamera({ onExtraction, onError }: ReceiptCameraPr
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        onError?.(err.detail || err.detail_en || t("receipt.unreadable"));
+        const err = await res.json().catch(() => null);
+        onError?.(err?.detail || err?.detail_en || t("receipt.unreadable"));
         return;
       }
 

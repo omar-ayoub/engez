@@ -1,10 +1,11 @@
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { useCaptureStore } from "../store";
 import { mergeExtractions, type ExtractionSource } from "@/lib/extraction-merge";
 import ExpenseForm from "../components/ExpenseForm";
 import VoiceRecordButton from "../components/VoiceRecordButton";
 import ReceiptCamera from "../components/ReceiptCamera";
-import { Mic, Camera, Combine, PenLine } from "lucide-react";
+import { ArrowLeft, Mic, Camera, Combine, PenLine } from "lucide-react";
 import type { VoiceExtractionResult } from "../components/VoiceRecordButton";
 import type { ReceiptExtractionResult } from "../components/ReceiptCamera";
 
@@ -17,6 +18,7 @@ const MODES = [
 
 export default function CapturePage() {
   const { t } = useTranslation("capture");
+  const navigate = useNavigate();
   const { currentMode, setMode, voiceResult, receiptResult, setVoiceResult, setReceiptResult, clearAll } = useCaptureStore();
 
   const handleVoiceExtraction = (result: VoiceExtractionResult, blob: Blob) => {
@@ -76,7 +78,15 @@ export default function CapturePage() {
 
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
-      <header className="flex items-center justify-between border-b border-border px-4 py-3">
+      <header className="flex items-center gap-3 border-b border-border px-4 py-3">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="touch-target inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label={t("form.back", { defaultValue: "Back" })}
+        >
+          <ArrowLeft className="size-5 rtl:rotate-180" />
+        </button>
         <h1 className="text-base font-semibold">{t(`modes.${currentMode}`)}</h1>
       </header>
 
@@ -86,7 +96,8 @@ export default function CapturePage() {
             key={id}
             type="button"
             onClick={() => setMode(id)}
-            className={`flex min-h-touch flex-col items-center justify-center gap-0.5 rounded-lg px-4 py-2 text-xs transition-colors ${
+            aria-pressed={currentMode === id}
+            className={`flex min-h-touch flex-col items-center justify-center gap-0.5 rounded-lg px-4 py-2 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               currentMode === id
                 ? "font-medium text-brand"
                 : "text-muted-foreground hover:text-foreground"

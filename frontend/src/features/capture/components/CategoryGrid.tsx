@@ -30,11 +30,14 @@ export default function CategoryGrid({ selected, onChange }: CategoryGridProps) 
   const { t } = useTranslation("capture");
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+    const isRTL = document.documentElement.dir === "rtl";
     let target: number;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+    const forward = e.key === "ArrowDown" || (e.key === (isRTL ? "ArrowLeft" : "ArrowRight"));
+    const backward = e.key === "ArrowUp" || (e.key === (isRTL ? "ArrowRight" : "ArrowLeft"));
+    if (forward) {
       e.preventDefault();
       target = (index + 1) % CATEGORIES.length;
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+    } else if (backward) {
       e.preventDefault();
       target = (index - 1 + CATEGORIES.length) % CATEGORIES.length;
     } else {
