@@ -129,14 +129,14 @@ export default function ReceiptZoomViewer({ src, onRefreshed: _onRefreshed, onRe
         <button
           onClick={() => setScale((s) => Math.min(s + 0.2, 5))}
           className="w-11 h-11 bg-gray-700/80 rounded text-white text-lg flex items-center justify-center hover:bg-gray-600"
-          aria-label="Zoom in"
+          aria-label={t("detail.zoomIn")}
         >
           +
         </button>
         <button
           onClick={() => setScale((s) => Math.max(s - 0.2, 0.5))}
           className="w-11 h-11 bg-gray-700/80 rounded text-white text-lg flex items-center justify-center hover:bg-gray-600"
-          aria-label="Zoom out"
+          aria-label={t("detail.zoomOut")}
         >
           −
         </button>

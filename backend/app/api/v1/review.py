@@ -69,7 +69,7 @@ def _parse_date_or_raise(value: str, field_name: str) -> datetime:
         return datetime.fromisoformat(value)
     except (ValueError, TypeError):
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail={"detail": f"تاريخ غير صالح: {field_name}", "detail_en": f"Invalid date for {field_name}"},
         )
 
@@ -93,7 +93,7 @@ async def review_queue(
 ):
     if amount_min is not None and amount_max is not None and amount_max < amount_min:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail={"detail": "الحد الأقصى يجب أن يكون أكبر من الحد الأدنى", "detail_en": "amount_max must be >= amount_min"},
         )
     from_dt = _parse_date_or_raise(date_from, "date_from") if date_from else None

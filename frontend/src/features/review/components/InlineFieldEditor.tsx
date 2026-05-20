@@ -20,6 +20,7 @@ export default function InlineFieldEditor({
   const inputRef = useRef<HTMLInputElement>(null);
   const isNumeric = fieldName === "amount";
   const [editValue, setEditValue] = useState(String(value ?? ""));
+  const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -27,8 +28,12 @@ export default function InlineFieldEditor({
   }, []);
 
   const handleSave = async () => {
+    setValidationError("");
     const saveValue = isNumeric ? Number(editValue) : editValue;
-    if (isNumeric && isNaN(saveValue as number)) return;
+    if (isNumeric && isNaN(saveValue as number)) {
+      setValidationError(t("correct.invalidNumber"));
+      return;
+    }
     await onSave(saveValue);
   };
 
@@ -38,30 +43,33 @@ export default function InlineFieldEditor({
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <input
-        ref={inputRef}
-        type={isNumeric ? "number" : "text"}
-        value={editValue}
-        onChange={(e) => setEditValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        className="flex-1 bg-gray-700 text-white rounded px-2 py-1 text-sm border border-blue-500 focus:outline-none"
-        dir={isNumeric ? "ltr" : undefined}
-        aria-label={t("correct.title", { field: t(`correct.field.${fieldName}`) })}
-      />
-      <button
-        onClick={handleSave}
-        disabled={loading}
-        className="px-3 py-1 bg-green-600 hover:bg-green-500 disabled:bg-gray-600 rounded text-sm min-h-[44px]"
-      >
-        {loading ? t("correct.saving") : t("correct.save")}
-      </button>
-      <button
-        onClick={onCancel}
-        className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm min-h-[44px]"
-      >
-        {t("correct.cancel")}
-      </button>
+    <div>
+      <div className="flex items-center gap-2">
+        <input
+          ref={inputRef}
+          type={isNumeric ? "number" : "text"}
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-1 bg-gray-700 text-white rounded px-2 py-1 text-sm border border-blue-500 focus:outline-none min-h-[44px]"
+          dir={isNumeric ? "ltr" : "auto"}
+          aria-label={t("correct.title", { field: t(`correct.field.${fieldName}`) })}
+        />
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className="px-3 py-1 bg-green-600 hover:bg-green-500 disabled:bg-gray-600 rounded text-sm min-h-[44px]"
+        >
+          {loading ? t("correct.saving") : t("correct.save")}
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm min-h-[44px]"
+        >
+          {t("correct.cancel")}
+        </button>
+      </div>
+      {validationError && <p className="text-red-400 text-xs mt-1">{validationError}</p>}
     </div>
   );
 }

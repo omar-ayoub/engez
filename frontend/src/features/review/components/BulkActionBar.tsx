@@ -88,7 +88,7 @@ export default function BulkActionBar({ selectedIds, items, onClear, onComplete 
             className="px-6 py-2 bg-green-600 hover:bg-green-500 disabled:bg-gray-600 disabled:cursor-not-allowed rounded font-medium transition-colors min-h-[44px]"
           >
             {loading
-              ? "..."
+              ? t("actions.pendingConfirmation")
               : selectedIds.size > 0
                 ? t("actions.bulkApprove", { count: selectedIds.size })
                 : t("actions.bulkApproveZero")}
