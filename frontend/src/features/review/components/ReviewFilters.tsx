@@ -115,7 +115,7 @@ export default function ReviewFilters({ filters, onUpdate }: ReviewFiltersProps)
             placeholder={t("filters.min")}
             value={filters.amount_min ?? ""}
             onChange={(e) => onUpdate({ amount_min: e.target.value ? Number(e.target.value) : undefined, page: 1 })}
-            className="w-full bg-gray-700 text-white rounded px-2 py-2 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none"
+            className="w-full bg-gray-700 text-white rounded px-2 py-2 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none min-h-[44px]"
             min={0}
             aria-label={t("filters.min")}
           />
@@ -124,7 +124,7 @@ export default function ReviewFilters({ filters, onUpdate }: ReviewFiltersProps)
             placeholder={t("filters.max")}
             value={filters.amount_max ?? ""}
             onChange={(e) => onUpdate({ amount_max: e.target.value ? Number(e.target.value) : undefined, page: 1 })}
-            className="w-full bg-gray-700 text-white rounded px-2 py-2 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none"
+            className="w-full bg-gray-700 text-white rounded px-2 py-2 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none min-h-[44px]"
             min={0}
             aria-label={t("filters.max")}
           />
@@ -138,14 +138,14 @@ export default function ReviewFilters({ filters, onUpdate }: ReviewFiltersProps)
             type="date"
             value={filters.date_from || ""}
             onChange={(e) => onUpdate({ date_from: e.target.value || undefined, page: 1 })}
-            className="w-full bg-gray-700 text-white rounded px-2 py-2 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none"
+            className="w-full bg-gray-700 text-white rounded px-2 py-2 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none min-h-[44px]"
             aria-label={t("filters.from")}
           />
           <input
             type="date"
             value={filters.date_to || ""}
             onChange={(e) => onUpdate({ date_to: e.target.value || undefined, page: 1 })}
-            className="w-full bg-gray-700 text-white rounded px-2 py-2 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none"
+            className="w-full bg-gray-700 text-white rounded px-2 py-2 text-sm border border-gray-600 focus:border-blue-500 focus:outline-none min-h-[44px]"
             aria-label={t("filters.to")}
           />
         </div>

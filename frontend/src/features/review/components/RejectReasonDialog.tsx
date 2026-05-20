@@ -47,9 +47,12 @@ export default function RejectReasonDialog({ open, onConfirm, onCancel, loading 
           maxLength={1000}
           aria-label={t("reject.title")}
         />
-        {!isValid && reason.length > 0 && (
-          <p className="text-red-400 text-xs mt-1">{t("reject.minLength")}</p>
-        )}
+        <div className="flex items-center justify-between mt-1">
+          {!isValid && reason.length > 0 ? (
+            <p className="text-red-400 text-xs">{t("reject.minLength")}</p>
+          ) : <span />}
+          <span className="text-gray-500 text-xs" dir="ltr">{trimmed.length}/1000</span>
+        </div>
         <div className="flex justify-end gap-3 mt-4">
           <button
             onClick={onCancel}

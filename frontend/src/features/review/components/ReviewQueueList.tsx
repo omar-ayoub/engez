@@ -79,7 +79,7 @@ export default function ReviewQueueList({
                   }}
                   role="button"
                   tabIndex={0}
-                  aria-label={`${item.vendor || "Expense"} ${item.amount} ${item.currency}`}
+                  aria-label={t("list.expenseLabel", { vendor: item.vendor || t("list.vendor"), amount: item.amount, currency: item.currency })}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
@@ -90,23 +90,25 @@ export default function ReviewQueueList({
                 >
                   {selectionMode && (
                     <td className="ps-3 py-3">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        disabled={isDisabled}
-                        onChange={() => item.bulk_eligible && onToggleSelect(item.id)}
-                        className="w-5 h-5 rounded"
-                        aria-label={`Select expense ${item.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                      />
+                      <label className="flex items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          disabled={isDisabled}
+                          onChange={() => item.bulk_eligible && onToggleSelect(item.id)}
+                          className="w-5 h-5 rounded"
+                          aria-label={t("list.selectExpense", { id: item.id })}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </label>
                     </td>
                   )}
                   <td className="ps-3 py-3 font-mono" dir="ltr">
                     {item.amount.toLocaleString("en", { minimumFractionDigits: 2 })} {item.currency}
                   </td>
-                  <td className="ps-3 py-3">{item.vendor || "—"}</td>
-                  <td className="ps-3 py-3">{item.employee.name_ar}</td>
-                  <td className="ps-3 py-3">{item.project?.name_ar || "—"}</td>
+                  <td className="ps-3 py-3 max-w-[160px] truncate">{item.vendor || "—"}</td>
+                  <td className="ps-3 py-3 max-w-[140px] truncate">{item.employee.name_ar}</td>
+                  <td className="ps-3 py-3 max-w-[140px] truncate">{item.project?.name_ar || "—"}</td>
                   <td className="ps-3 py-3">{t(`captureMode.${item.capture_mode}`)}</td>
                   <td className="ps-3 py-3 text-gray-400">
                     {new Date(item.created_at).toLocaleDateString("ar-EG")}
@@ -116,7 +118,7 @@ export default function ReviewQueueList({
                   </td>
                   <td className="ps-3 py-3">
                     {item.eta_verified ? (
-                      <span className="text-green-400 text-xs" aria-label={t("list.etaVerified")}>✓ ETA</span>
+                      <span className="text-green-400 text-xs" aria-label={t("list.etaVerified")}>✓ {t("list.etaVerified")}</span>
                     ) : null}
                   </td>
                   <td className="ps-3 py-3">
