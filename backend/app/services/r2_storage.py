@@ -44,6 +44,10 @@ async def upload_blob(
     if len(data) > MAX_BLOB_SIZE:
         raise ValueError(f"File exceeds {MAX_BLOB_SIZE // (1024 * 1024)}MB limit")
 
+    if not settings.R2_ACCOUNT_ID or not settings.R2_ACCESS_KEY:
+        logger.warning("R2 not configured — skipping upload for %s/%s", company_id, blob_type)
+        return f"local://{company_id}/{blob_type}/{uuid.uuid4()}.{extension}"
+
     now = datetime.utcnow()
     key = f"{company_id}/{blob_type}/{now.strftime('%Y-%m')}/{uuid.uuid4()}.{extension}"
     content_type = _content_type_for(extension)

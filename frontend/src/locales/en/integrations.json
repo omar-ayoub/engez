@@ -76,7 +76,7 @@
     "period": "Period: Last {{days}} days",
     "fetchError": "Failed to load anomaly metrics",
     "types": {
-      "duplicate_receipt": "Duplicate Receipt",
+      "duplicate_receipt": "Duplicate Invoice",
       "statistical_outlier": "Statistical Outlier",
       "high_velocity": "High Submission Rate",
       "vendor_mismatch": "Vendor-Category Mismatch"

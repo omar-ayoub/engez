@@ -136,13 +136,13 @@ test.describe("Voice Capture", () => {
   });
 });
 
-test.describe("Receipt Capture", () => {
-  test("receipt capture button exists", async ({ page, access }) => {
+test.describe("Invoice Capture", () => {
+  test("invoice capture button exists", async ({ page, access }) => {
     await access.authenticate(page);
     await page.goto("/capture");
 
-    const receiptBtn = page.getByRole("button", { name: "Receipt", exact: true });
-    await expect(receiptBtn).toBeVisible();
+    const invoiceBtn = page.getByRole("button", { name: "Invoice" }).or(page.getByRole("button", { name: "فاتورة" }));
+    await expect(invoiceBtn).toBeVisible();
   });
 });
 

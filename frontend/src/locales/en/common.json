@@ -23,7 +23,7 @@
     "approved": "Approved",
     "rejected": "Rejected",
     "voice": "Voice Recording",
-    "camera": "Receipt Photo",
+    "camera": "Invoice Photo",
     "savedLocally": "Saved locally — will sync when connected",
     "synced": "Synced",
     "etaVerified": "E-invoice verified"

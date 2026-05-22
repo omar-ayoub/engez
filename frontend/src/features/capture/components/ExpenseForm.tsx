@@ -99,10 +99,12 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4 p-4">
-      <div className="flex gap-3">
-        <VoiceRecordButton onExtraction={handleVoiceExtraction} onError={handleVoiceError} />
-        <ReceiptCamera onExtraction={handleReceiptExtraction} onError={handleReceiptError} />
-      </div>
+      {!children && (
+        <div className="flex gap-3">
+          <VoiceRecordButton onExtraction={handleVoiceExtraction} onError={handleVoiceError} />
+          <ReceiptCamera onExtraction={handleReceiptExtraction} onError={handleReceiptError} />
+        </div>
+      )}
 
       {error && (
         <div role="alert" className="flex items-center gap-2 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">

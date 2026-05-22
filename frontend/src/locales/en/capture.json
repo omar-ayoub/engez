@@ -10,14 +10,14 @@
     "maxDuration": "Max 60 seconds"
   },
   "receipt": {
-    "capture": "Capture Receipt",
+    "capture": "Capture Invoice",
     "retake": "Retake",
     "processing": "Processing...",
     "qrDetected": "E-invoice QR detected",
     "noCamera": "Cannot access camera",
-    "unreadable": "Could not read receipt. Please retake",
+    "unreadable": "Could not read invoice. Please retake",
     "qr": "QR",
-    "process": "Process Receipt"
+    "process": "Process Invoice"
   },
   "form": {
     "amount": "Amount",
@@ -65,8 +65,8 @@
   },
   "modes": {
     "voice": "Voice",
-    "receipt": "Receipt",
-    "combined": "Voice + Receipt",
+    "receipt": "Invoice",
+    "combined": "Voice + Invoice",
     "manual": "Manual"
   },
   "errors": {

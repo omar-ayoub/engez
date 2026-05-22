@@ -76,7 +76,7 @@
     "period": "الفترة: آخر {{days}} يوم",
     "fetchError": "تعذر تحميل مقاييس الشذوذ",
     "types": {
-      "duplicate_receipt": "إيصال مكرر",
+      "duplicate_receipt": "فاتورة مكررة",
       "statistical_outlier": "قيمة غير معتادة",
       "high_velocity": "معدل إرسال مرتفع",
       "vendor_mismatch": "تعيين فئة غير متطابق"
