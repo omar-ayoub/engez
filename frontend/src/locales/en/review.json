@@ -60,12 +60,12 @@
   "detail": {
     "title": "Expense Detail",
     "backToQueue": "Back to Queue",
-    "receipt": "Receipt",
-    "receiptLoadError": "Failed to load receipt",
-    "receiptRetry": "Retry receipt load",
+    "receipt": "Invoice",
+    "receiptLoadError": "Failed to load invoice",
+    "receiptRetry": "Retry invoice load",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
-    "noReceipt": "No receipt",
+    "noReceipt": "No invoice",
     "transcript": "Voice Transcript",
     "noTranscript": "No voice transcript",
     "aiFields": "AI Extracted Fields",
@@ -187,18 +187,18 @@
   },
   "captureMode": {
     "voice": "Voice",
-    "receipt": "Receipt",
+    "receipt": "Invoice",
     "combined": "Combined",
     "manual": "Manual"
   },
   "anomaly": {
     "unusual_amount": "Unusual Amount",
     "duplicate_suspect": "Duplicate Suspect",
-    "missing_receipt": "Missing Receipt",
+    "missing_receipt": "Missing Invoice",
     "low_confidence": "Low Confidence",
     "unusualAmount": "Unusual Amount",
     "duplicateSuspect": "Duplicate Suspect",
-    "missingReceipt": "Missing Receipt",
+    "missingReceipt": "Missing Invoice",
     "lowConfidence": "Low Confidence"
   },
   "offline": {

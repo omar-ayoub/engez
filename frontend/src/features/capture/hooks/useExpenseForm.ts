@@ -3,21 +3,59 @@ import { useForm } from "react-hook-form";
 import { db, type OfflineExpense } from "@/lib/db";
 import { useAuthStore } from "@/lib/auth";
 
+export interface LineItem {
+  description: string;
+  amount: string;
+  source: "extracted" | "manual";
+}
+
 export interface ExpenseFormValues {
   amount: number;
   currency: string;
   vendor: string;
-  items: string;
+  lineItems: LineItem[];
   categoryId: string;
   projectId: string;
   notes: string;
   captureMode: "voice" | "receipt" | "combined" | "manual";
 }
 
+function serializeLineItems(lineItems: LineItem[]): string {
+  return lineItems
+    .filter((li) => li.description.trim())
+    .map((li) => {
+      const prefix = li.source === "manual" ? "[+] " : "";
+      const amt = li.amount ? ` — ${li.amount}` : "";
+      return `${prefix}${li.description}${amt}`;
+    })
+    .join("\n");
+}
+
+export function parseLineItems(items: string): LineItem[] {
+  if (!items) return [{ description: "", amount: "", source: "manual" }];
+  const lines = items.split("\n").filter(Boolean);
+  if (!lines.length) return [{ description: "", amount: "", source: "manual" }];
+  return lines.map((line) => {
+    const isManual = line.startsWith("[+] ");
+    const clean = isManual ? line.slice(4) : line;
+    const dashIdx = clean.lastIndexOf(" — ");
+    if (dashIdx >= 0) {
+      return {
+        description: clean.slice(0, dashIdx),
+        amount: clean.slice(dashIdx + 3),
+        source: isManual ? "manual" as const : "extracted" as const,
+      };
+    }
+    return { description: clean, amount: "", source: isManual ? "manual" as const : "extracted" as const };
+  });
+}
+
 interface UseExpenseFormOptions {
   initialData?: Partial<ExpenseFormValues>;
   confidence?: Record<string, number>;
   onSubmitSuccess?: () => void;
+  receiptBlob?: Blob | null;
+  voiceBlob?: Blob | null;
 }
 
 export function useExpenseForm(options: UseExpenseFormOptions = {}) {
@@ -31,7 +69,7 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
       amount: options.initialData?.amount ?? 0,
       currency: options.initialData?.currency ?? "EGP",
       vendor: options.initialData?.vendor ?? "",
-      items: options.initialData?.items ?? "",
+      lineItems: options.initialData?.lineItems ?? [{ description: "", amount: "", source: "manual" }],
       categoryId: options.initialData?.categoryId ?? "",
       projectId: options.initialData?.projectId ?? "",
       notes: options.initialData?.notes ?? "",
@@ -39,9 +77,21 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
     },
   });
 
+  // Update form when initialData changes (e.g. after AI extraction)
+  const initialData = options.initialData;
+  const lineItemsDep = JSON.stringify(initialData?.lineItems);
+  useEffect(() => {
+    if (!initialData) return;
+    if (initialData.amount != null) form.setValue("amount", initialData.amount);
+    if (initialData.vendor) form.setValue("vendor", initialData.vendor);
+    if (initialData.lineItems?.length) form.setValue("lineItems", initialData.lineItems);
+    if (initialData.categoryId) form.setValue("categoryId", initialData.categoryId);
+    if (initialData.captureMode) form.setValue("captureMode", initialData.captureMode);
+  }, [initialData?.amount, initialData?.vendor, lineItemsDep, initialData?.categoryId, initialData?.captureMode, form]);
+
   const saveDraft = useCallback(async () => {
     const values = form.getValues();
-    if (!values.amount && !values.vendor && !values.items) return;
+    if (!values.amount && !values.vendor && !values.lineItems.some((li) => li.description.trim())) return;
 
     const now = new Date();
     const id = draftId || crypto.randomUUID();
@@ -52,7 +102,7 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
       amount: values.amount || 0,
       currency: values.currency || "EGP",
       vendor: values.vendor || undefined,
-      items: values.items || "",
+      items: serializeLineItems(values.lineItems),
       categoryId: values.categoryId || undefined,
       projectId: values.projectId || undefined,
       notes: values.notes || undefined,
@@ -60,12 +110,18 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
       status: "draft",
       etaVerified: false,
       draftProcessed: captureMode === "manual",
+      receiptBlob: options.receiptBlob || undefined,
+      voiceBlob: options.voiceBlob || undefined,
       createdAt: now,
     };
 
     await db.expenses.put(expense as OfflineExpense);
     if (!draftId) setDraftId(id);
   }, [form, draftId, userId]);
+
+  // Keep a ref to the latest saveDraft so the unmount effect can call it
+  const saveDraftRef = useRef(saveDraft);
+  saveDraftRef.current = saveDraft;
 
   useEffect(() => {
     autoSaveTimerRef.current = setInterval(() => {
@@ -78,6 +134,11 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
       if (autoSaveTimerRef.current) clearInterval(autoSaveTimerRef.current);
     };
   }, [form.formState.isDirty, saveDraft]);
+
+  // Save draft on unmount so no data is lost when navigating away
+  useEffect(() => {
+    return () => { saveDraftRef.current(); };
+  }, []);
 
   const onSubmit = form.handleSubmit(async (values) => {
     setIsSubmitting(true);
@@ -96,7 +157,7 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
         amount: values.amount,
         currency: values.currency,
         vendor: values.vendor || undefined,
-        items: values.items,
+        items: serializeLineItems(values.lineItems),
         categoryId: values.categoryId || undefined,
         projectId: values.projectId || undefined,
         notes: values.notes || undefined,
@@ -104,6 +165,8 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
         status: "pending",
         etaVerified: false,
         draftProcessed: true,
+        receiptBlob: options.receiptBlob || undefined,
+        voiceBlob: options.voiceBlob || undefined,
         createdAt: new Date(),
       };
 
@@ -114,12 +177,13 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
         amount: values.amount,
         currency: values.currency,
         vendor: values.vendor || "",
-        items: values.items || "",
+        items: serializeLineItems(values.lineItems),
         category_id: values.categoryId || null,
         project_id: values.projectId || null,
         notes: values.notes || null,
         capture_mode: values.captureMode,
         eta_verified: false,
+        has_manual_items: values.lineItems.some((li) => li.source === "manual" && li.description.trim()),
       };
       await db.syncQueue.add({
         id: crypto.randomUUID(),

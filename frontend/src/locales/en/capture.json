@@ -10,19 +10,26 @@
     "maxDuration": "Max 60 seconds"
   },
   "receipt": {
-    "capture": "Capture Receipt",
+    "capture": "Capture Invoice",
     "retake": "Retake",
     "processing": "Processing...",
     "qrDetected": "E-invoice QR detected",
     "noCamera": "Cannot access camera",
-    "unreadable": "Could not read receipt. Please retake",
+    "unreadable": "Could not read invoice. Please retake",
     "qr": "QR",
-    "process": "Process Receipt"
+    "process": "Process Invoice"
   },
   "form": {
     "amount": "Amount",
     "vendor": "Vendor",
     "items": "Items",
+    "itemDescription": "Description",
+    "itemAmount": "Amount",
+    "itemDescriptionPlaceholder": "Item name",
+    "addItem": "Add item",
+    "removeItem": "Remove item",
+    "sourceExtracted": "Extracted by AI",
+    "sourceManual": "Added manually — needs verification",
     "category": "Category",
     "project": "Project",
     "notes": "Notes",
@@ -30,7 +37,9 @@
     "submitting": "Submitting...",
     "saved": "Auto-saved",
     "vendorPlaceholder": "Start typing vendor name",
-    "itemsPlaceholder": "What was purchased?"
+    "itemsPlaceholder": "What was purchased?",
+    "micSpeak": "Tap to dictate",
+    "micListening": "Listening..."
   },
   "categories": {
     "materials": "Materials",
@@ -65,8 +74,8 @@
   },
   "modes": {
     "voice": "Voice",
-    "receipt": "Receipt",
-    "combined": "Voice + Receipt",
+    "receipt": "Invoice",
+    "combined": "Voice + Invoice",
     "manual": "Manual"
   },
   "errors": {

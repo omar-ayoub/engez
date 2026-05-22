@@ -60,12 +60,12 @@
   "detail": {
     "title": "تفاصيل المصروف",
     "backToQueue": "العودة للطابور",
-    "receipt": "الإيصال",
-    "receiptLoadError": "فشل تحميل الإيصال",
-    "receiptRetry": "إعادة محاولة تحميل الإيصال",
+    "receipt": "الفاتورة",
+    "receiptLoadError": "فشل تحميل الفاتورة",
+    "receiptRetry": "إعادة محاولة تحميل الفاتورة",
     "zoomIn": "تكبير",
     "zoomOut": "تصغير",
-    "noReceipt": "لا يوجد إيصال",
+    "noReceipt": "لا توجد فاتورة",
     "transcript": "النص الصوتي",
     "noTranscript": "لا يوجد نص صوتي",
     "aiFields": "الحقول المستخرجة بالذكاء الاصطناعي",
@@ -187,18 +187,18 @@
   },
   "captureMode": {
     "voice": "صوتي",
-    "receipt": "إيصال",
+    "receipt": "فاتورة",
     "combined": "مدمج",
     "manual": "يدوي"
   },
   "anomaly": {
     "unusual_amount": "مبلغ غير معتاد",
     "duplicate_suspect": "مشتبه بتكرار",
-    "missing_receipt": "إيصال مفقود",
+    "missing_receipt": "فاتورة مفقودة",
     "low_confidence": "ثقة منخفضة",
     "unusualAmount": "مبلغ غير معتاد",
     "duplicateSuspect": "مشتبه بتكرار",
-    "missingReceipt": "إيصال مفقود",
+    "missingReceipt": "فاتورة مفقودة",
     "lowConfidence": "ثقة منخفضة"
   },
   "offline": {

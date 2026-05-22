@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useReceiptCapture } from "../hooks/useReceiptCapture";
-import { Camera, Loader2, QrCode, RotateCcw } from "lucide-react";
+import { Camera, Loader2, QrCode, RotateCcw, X } from "lucide-react";
 
 interface ReceiptExtractionResult {
   extraction: {
@@ -26,7 +26,7 @@ interface ReceiptExtractionResult {
 }
 
 interface ReceiptCameraProps {
-  onExtraction: (result: ReceiptExtractionResult) => void;
+  onExtraction: (result: ReceiptExtractionResult, blob: Blob) => void;
   onError?: (error: string) => void;
 }
 
@@ -34,6 +34,7 @@ export default function ReceiptCamera({ onExtraction, onError }: ReceiptCameraPr
   const { t } = useTranslation("capture");
   const { imageBlob, previewUrl, isProcessing, capture, reset } = useReceiptCapture();
   const [qrBadge, setQrBadge] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleCapture = () => {
     reset();
@@ -42,6 +43,7 @@ export default function ReceiptCamera({ onExtraction, onError }: ReceiptCameraPr
   };
 
   const processImage = async (blob: Blob) => {
+    setIsUploading(true);
     try {
       const formData = new FormData();
       formData.append("image", blob, "receipt.jpg");
@@ -64,9 +66,11 @@ export default function ReceiptCamera({ onExtraction, onError }: ReceiptCameraPr
 
       const result: ReceiptExtractionResult = await res.json();
       if (result.qr_detected) setQrBadge(true);
-      onExtraction(result);
+      onExtraction(result, blob);
     } catch {
       onError?.(t("receipt.unreadable"));
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -79,8 +83,16 @@ export default function ReceiptCamera({ onExtraction, onError }: ReceiptCameraPr
             alt="Receipt preview"
             className="h-24 w-24 rounded-lg object-cover"
           />
+          <button
+            type="button"
+            onClick={() => { reset(); setQrBadge(false); }}
+            className="absolute -end-1.5 -top-1.5 inline-flex size-6 items-center justify-center rounded-full bg-destructive text-white shadow-sm focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={t("receipt.delete", { defaultValue: "Delete image" })}
+          >
+            <X className="size-3.5" />
+          </button>
           {qrBadge && (
-            <span className="absolute -right-1 -top-1 flex items-center gap-0.5 rounded-full bg-success-surface px-1.5 py-0.5 text-[10px] text-white">
+            <span className="absolute -right-1 top-5 flex items-center gap-0.5 rounded-full bg-success-surface px-1.5 py-0.5 text-[10px] text-white">
               <QrCode className="size-3" />
               {t("receipt.qr")}
             </span>
@@ -88,7 +100,7 @@ export default function ReceiptCamera({ onExtraction, onError }: ReceiptCameraPr
           <button
             type="button"
             onClick={handleCapture}
-            className="touch-target absolute -bottom-2 -left-2 inline-flex items-center justify-center rounded-full bg-secondary p-2 focus-visible:ring-2 focus-visible:ring-ring"
+            className="touch-target absolute -bottom-2 -start-2 inline-flex items-center justify-center rounded-full bg-secondary p-2 focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={t("receipt.retake")}
           >
             <RotateCcw className="size-4" />
@@ -120,9 +132,17 @@ export default function ReceiptCamera({ onExtraction, onError }: ReceiptCameraPr
         <button
           type="button"
           onClick={() => processImage(imageBlob)}
-          className="min-h-touch rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          disabled={isUploading}
+          className="min-h-touch rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-opacity disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-          {t("receipt.process")}
+          {isUploading ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="size-4 animate-spin" />
+              {t("receipt.processing")}
+            </span>
+          ) : (
+            t("receipt.process")
+          )}
         </button>
       )}
     </div>

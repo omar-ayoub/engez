@@ -17,7 +17,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function IntegrationCard({ displayName, status, lastSyncAt, onClick, active }: Props) {
-  const { t } = useTranslation("integrations");
+  const { t, i18n } = useTranslation("integrations");
+  const dateLocale = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   return (
     <button
@@ -36,7 +37,7 @@ export default function IntegrationCard({ displayName, status, lastSyncAt, onCli
       </div>
       {lastSyncAt && (
         <p className="text-xs text-muted-foreground">
-          {t("status.lastSync")}: {new Date(lastSyncAt).toLocaleDateString("ar-EG")}
+          {t("status.lastSync")}: {new Date(lastSyncAt).toLocaleDateString(dateLocale)}
         </p>
       )}
     </button>

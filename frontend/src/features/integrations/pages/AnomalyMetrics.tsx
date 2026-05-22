@@ -21,6 +21,7 @@ export default function AnomalyMetrics() {
 
   useEffect(() => {
     if (!accessToken) return;
+    setLoading(true);
     fetch("/api/v1/anomalies/metrics?days=30", {
       headers: { Authorization: `Bearer ${accessToken}` },
     })
@@ -81,6 +82,7 @@ export default function AnomalyMetrics() {
                     <div
                       className="w-24 sm:w-32 bg-secondary rounded-full h-2"
                       role="progressbar"
+                      aria-valuemin={0}
                       aria-valuenow={count}
                       aria-valuemax={metrics.total_flags}
                       aria-label={t(`anomaly.types.${type}`)}

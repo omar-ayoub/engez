@@ -10,19 +10,26 @@
     "maxDuration": "الحد الأقصى ٦٠ ثانية"
   },
   "receipt": {
-    "capture": "صوّر الإيصال",
+    "capture": "صوّر الفاتورة",
     "retake": "إعادة التصوير",
     "processing": "جاري المعالجة...",
     "qrDetected": "تم اكتشاف رمز الفاتورة الإلكترونية",
     "noCamera": "لا يمكن الوصول للكاميرا",
-    "unreadable": "تعذر قراءة الإيصال. يرجى إعادة التصوير",
+    "unreadable": "تعذر قراءة الفاتورة. يرجى إعادة التصوير",
     "qr": "QR",
-    "process": "معالجة الإيصال"
+    "process": "معالجة الفاتورة"
   },
   "form": {
     "amount": "المبلغ",
     "vendor": "المورد",
     "items": "الأصناف",
+    "itemDescription": "الوصف",
+    "itemAmount": "المبلغ",
+    "itemDescriptionPlaceholder": "اسم الصنف",
+    "addItem": "إضافة صنف",
+    "removeItem": "إزالة",
+    "sourceExtracted": "مستخرج بالذكاء الاصطناعي",
+    "sourceManual": "مضاف يدوياً — يتطلب تحقق",
     "category": "الفئة",
     "project": "المشروع",
     "notes": "ملاحظات",
@@ -30,7 +37,9 @@
     "submitting": "جاري الإرسال...",
     "saved": "تم الحفظ تلقائياً",
     "vendorPlaceholder": "ابدأ بكتابة اسم المورد",
-    "itemsPlaceholder": "ما الذي تم شراؤه؟"
+    "itemsPlaceholder": "ما الذي تم شراؤه؟",
+    "micSpeak": "انقر للإملاء",
+    "micListening": "جاري الاستماع..."
   },
   "categories": {
     "materials": "مواد بناء",
@@ -65,8 +74,8 @@
   },
   "modes": {
     "voice": "صوتي",
-    "receipt": "إيصال",
-    "combined": "صوتي + إيصال",
+    "receipt": "فاتورة",
+    "combined": "صوتي + فاتورة",
     "manual": "يدوي"
   },
   "errors": {
