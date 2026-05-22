@@ -36,12 +36,12 @@ jobs:
         run: uv run ruff check .
 
       - name: Test
-        timeout-minutes: 5
+        timeout-minutes: 3
         env:
           DATABASE_URL: "sqlite+aiosqlite:///./test.db"
           SECRET_KEY: "ci-test-secret-key-not-for-production"
           REDIS_URL: "redis://localhost:6379/0"
-        run: uv run pytest -x -v --tb=short 2>&1
+        run: uv run pytest -x --tb=short
 
   # ── CI: Frontend ─────────────────────────────────
   test-frontend:
