@@ -28,6 +28,8 @@
     "itemDescriptionPlaceholder": "Item name",
     "addItem": "Add item",
     "removeItem": "Remove item",
+    "sourceExtracted": "Extracted by AI",
+    "sourceManual": "Added manually — needs verification",
     "category": "Category",
     "project": "Project",
     "notes": "Notes",
@@ -35,7 +37,9 @@
     "submitting": "Submitting...",
     "saved": "Auto-saved",
     "vendorPlaceholder": "Start typing vendor name",
-    "itemsPlaceholder": "What was purchased?"
+    "itemsPlaceholder": "What was purchased?",
+    "micSpeak": "Tap to dictate",
+    "micListening": "Listening..."
   },
   "categories": {
     "materials": "Materials",

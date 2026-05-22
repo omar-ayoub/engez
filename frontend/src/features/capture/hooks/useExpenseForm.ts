@@ -6,6 +6,7 @@ import { useAuthStore } from "@/lib/auth";
 export interface LineItem {
   description: string;
   amount: string;
+  source: "extracted" | "manual";
 }
 
 export interface ExpenseFormValues {
@@ -23,10 +24,30 @@ function serializeLineItems(lineItems: LineItem[]): string {
   return lineItems
     .filter((li) => li.description.trim())
     .map((li) => {
+      const prefix = li.source === "manual" ? "[+] " : "";
       const amt = li.amount ? ` — ${li.amount}` : "";
-      return `${li.description}${amt}`;
+      return `${prefix}${li.description}${amt}`;
     })
     .join("\n");
+}
+
+export function parseLineItems(items: string): LineItem[] {
+  if (!items) return [{ description: "", amount: "", source: "manual" }];
+  const lines = items.split("\n").filter(Boolean);
+  if (!lines.length) return [{ description: "", amount: "", source: "manual" }];
+  return lines.map((line) => {
+    const isManual = line.startsWith("[+] ");
+    const clean = isManual ? line.slice(4) : line;
+    const dashIdx = clean.lastIndexOf(" — ");
+    if (dashIdx >= 0) {
+      return {
+        description: clean.slice(0, dashIdx),
+        amount: clean.slice(dashIdx + 3),
+        source: isManual ? "manual" as const : "extracted" as const,
+      };
+    }
+    return { description: clean, amount: "", source: isManual ? "manual" as const : "extracted" as const };
+  });
 }
 
 interface UseExpenseFormOptions {
@@ -48,7 +69,7 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
       amount: options.initialData?.amount ?? 0,
       currency: options.initialData?.currency ?? "EGP",
       vendor: options.initialData?.vendor ?? "",
-      lineItems: options.initialData?.lineItems ?? [{ description: "", amount: "" }],
+      lineItems: options.initialData?.lineItems ?? [{ description: "", amount: "", source: "manual" }],
       categoryId: options.initialData?.categoryId ?? "",
       projectId: options.initialData?.projectId ?? "",
       notes: options.initialData?.notes ?? "",
@@ -98,6 +119,10 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
     if (!draftId) setDraftId(id);
   }, [form, draftId, userId]);
 
+  // Keep a ref to the latest saveDraft so the unmount effect can call it
+  const saveDraftRef = useRef(saveDraft);
+  saveDraftRef.current = saveDraft;
+
   useEffect(() => {
     autoSaveTimerRef.current = setInterval(() => {
       if (form.formState.isDirty) {
@@ -109,6 +134,11 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
       if (autoSaveTimerRef.current) clearInterval(autoSaveTimerRef.current);
     };
   }, [form.formState.isDirty, saveDraft]);
+
+  // Save draft on unmount so no data is lost when navigating away
+  useEffect(() => {
+    return () => { saveDraftRef.current(); };
+  }, []);
 
   const onSubmit = form.handleSubmit(async (values) => {
     setIsSubmitting(true);
@@ -153,6 +183,7 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
         notes: values.notes || null,
         capture_mode: values.captureMode,
         eta_verified: false,
+        has_manual_items: values.lineItems.some((li) => li.source === "manual" && li.description.trim()),
       };
       await db.syncQueue.add({
         id: crypto.randomUUID(),

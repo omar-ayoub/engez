@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useCaptureStore } from "../store";
@@ -20,6 +21,13 @@ export default function CapturePage() {
   const { t } = useTranslation("capture");
   const navigate = useNavigate();
   const { currentMode, setMode, voiceResult, receiptResult, setVoiceResult, setReceiptResult, clearAll } = useCaptureStore();
+
+  // Clear store on unmount so next visit starts with a fresh form
+  // (draft is already saved by useExpenseForm's unmount effect)
+  useEffect(() => {
+    return () => { clearAll(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleVoiceExtraction = (result: VoiceExtractionResult, blob: Blob) => {
     setVoiceResult({
@@ -44,7 +52,7 @@ export default function CapturePage() {
       const e = voiceResult.extraction as Record<string, unknown>;
       const itemsStr = (e.items as string) || "";
       const lineItems = itemsStr
-        ? itemsStr.split("\n").filter(Boolean).map((line) => ({ description: line, amount: "" }))
+        ? itemsStr.split("\n").filter(Boolean).map((line) => ({ description: line, amount: "", source: "extracted" as const }))
         : undefined;
       return {
         amount: (e.amount as number) || undefined,
@@ -56,15 +64,16 @@ export default function CapturePage() {
     if (currentMode === "receipt" && receiptResult?.extraction) {
       const e = receiptResult.extraction as Record<string, unknown>;
       const rawLineItems = e.line_items as Array<{ description: string; quantity: number | null; amount: number | null }> | undefined;
-      let lineItems: Array<{ description: string; amount: string }> | undefined;
+      let lineItems: Array<{ description: string; amount: string; source: "extracted" | "manual" }> | undefined;
       if (rawLineItems && rawLineItems.length > 0) {
         lineItems = rawLineItems.map((li) => ({
           description: li.quantity != null && li.quantity > 1 ? `${li.quantity}x ${li.description}` : li.description,
           amount: li.amount != null ? String(li.amount) : "",
+          source: "extracted" as const,
         }));
       } else {
         const itemsStr = (e.items as string) || "";
-        lineItems = itemsStr ? [{ description: itemsStr, amount: "" }] : undefined;
+        lineItems = itemsStr ? [{ description: itemsStr, amount: "", source: "extracted" as const }] : undefined;
       }
       return {
         amount: (e.amount as number) || undefined,
@@ -83,7 +92,7 @@ export default function CapturePage() {
       });
       const itemsStr = merged.items || "";
       const lineItems = itemsStr
-        ? itemsStr.split("\n").filter(Boolean).map((line) => ({ description: line, amount: "" }))
+        ? itemsStr.split("\n").filter(Boolean).map((line) => ({ description: line, amount: "", source: "extracted" as const }))
         : undefined;
       return {
         amount: merged.amount || undefined,

@@ -28,6 +28,8 @@
     "itemDescriptionPlaceholder": "اسم الصنف",
     "addItem": "إضافة صنف",
     "removeItem": "إزالة",
+    "sourceExtracted": "مستخرج بالذكاء الاصطناعي",
+    "sourceManual": "مضاف يدوياً — يتطلب تحقق",
     "category": "الفئة",
     "project": "المشروع",
     "notes": "ملاحظات",
@@ -35,7 +37,9 @@
     "submitting": "جاري الإرسال...",
     "saved": "تم الحفظ تلقائياً",
     "vendorPlaceholder": "ابدأ بكتابة اسم المورد",
-    "itemsPlaceholder": "ما الذي تم شراؤه؟"
+    "itemsPlaceholder": "ما الذي تم شراؤه؟",
+    "micSpeak": "انقر للإملاء",
+    "micListening": "جاري الاستماع..."
   },
   "categories": {
     "materials": "مواد بناء",

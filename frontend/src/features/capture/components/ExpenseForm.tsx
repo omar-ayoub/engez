@@ -10,7 +10,8 @@ import ConfidenceBadge from "./ConfidenceBadge";
 import { confidenceBorderClass } from "../utils/confidence";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { QrCode, AlertCircle, Plus, X } from "lucide-react";
+import SpeechInputButton from "./SpeechInputButton";
+import { QrCode, AlertCircle, Plus, X, Bot, PenLine } from "lucide-react";
 
 interface ExpenseFormProps {
   initialData?: Partial<ExpenseFormValues>;
@@ -67,8 +68,8 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
         if (e.vendor) setValue("vendor", e.vendor);
         if (e.items) {
           const lines = e.items.split("\n").filter(Boolean);
-          const lineItems: LineItem[] = lines.map((line) => ({ description: line, amount: "" }));
-          setValue("lineItems", lineItems.length ? lineItems : [{ description: e.items, amount: "" }]);
+          const lineItems: LineItem[] = lines.map((line) => ({ description: line, amount: "", source: "extracted" }));
+          setValue("lineItems", lineItems.length ? lineItems : [{ description: e.items, amount: "", source: "extracted" }]);
         }
         if (e.currency) setValue("currency", e.currency);
         if (e.category) {
@@ -99,10 +100,11 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
           const lineItems: LineItem[] = e.line_items.map((li) => ({
             description: li.quantity != null && li.quantity > 1 ? `${li.quantity}x ${li.description}` : li.description,
             amount: li.amount != null ? String(li.amount) : "",
+            source: "extracted",
           }));
           setValue("lineItems", lineItems);
         } else if (e.items) {
-          setValue("lineItems", [{ description: e.items, amount: "" }]);
+          setValue("lineItems", [{ description: e.items, amount: "", source: "extracted" }]);
         }
         if (e.vendor_tax_reg && e.vendor) setValue("vendor", e.vendor);
         if (e.date) setValue("notes", e.date);
@@ -173,16 +175,19 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
           </label>
           {confidence?.amount != null && <ConfidenceBadge score={confidence.amount} />}
         </div>
-        <Input
-          id="amount"
-          type="text"
-          inputMode="decimal"
-          dir="ltr"
-          className={`h-14 text-2xl font-mono tabular-nums ${confidenceBorderClass(confidence?.amount)}`}
-          aria-invalid={!!errors.amount}
-          aria-describedby={errors.amount ? "amount-error" : undefined}
-          {...register("amount", { required: t("form.amount") })}
-        />
+        <div className="flex items-center gap-2">
+          <Input
+            id="amount"
+            type="text"
+            inputMode="decimal"
+            dir="ltr"
+            className={`h-14 flex-1 text-2xl font-mono tabular-nums ${confidenceBorderClass(confidence?.amount)}`}
+            aria-invalid={!!errors.amount}
+            aria-describedby={errors.amount ? "amount-error" : undefined}
+            {...register("amount", { required: t("form.amount") })}
+          />
+          <SpeechInputButton onResult={(text) => setValue("amount", text as unknown as number)} className="size-10" />
+        </div>
         {errors.amount && (
           <p id="amount-error" className="text-xs text-destructive">{errors.amount.message}</p>
         )}
@@ -195,7 +200,12 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
           </label>
           {confidence?.vendor != null && <ConfidenceBadge score={confidence.vendor} />}
         </div>
-        <VendorAutocomplete onChange={handleVendorChange} value={form.watch("vendor")} />
+        <div className="flex items-start gap-2">
+          <div className="flex-1">
+            <VendorAutocomplete onChange={handleVendorChange} value={form.watch("vendor")} />
+          </div>
+          <SpeechInputButton onResult={(text) => handleVendorChange(text)} className="mt-2 size-10" />
+        </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
@@ -208,7 +218,8 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
 
         <div className="flex flex-col gap-2 rounded-lg border border-input p-3">
           {fields.length > 0 && (
-            <div className="grid grid-cols-[1fr_5rem_2rem] gap-2 text-xs text-muted-foreground">
+            <div className="grid grid-cols-[1.25rem_1fr_5rem_2rem] gap-2 text-xs text-muted-foreground">
+              <span />
               <span>{t("form.itemDescription")}</span>
               <span className="text-end">{t("form.itemAmount")}</span>
               <span />
@@ -216,12 +227,25 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
           )}
 
           {fields.map((field, index) => (
-            <div key={field.id} className="grid grid-cols-[1fr_5rem_2rem] items-center gap-2">
-              <Input
-                {...register(`lineItems.${index}.description`)}
-                placeholder={t("form.itemDescriptionPlaceholder")}
-                className="h-10 text-sm"
-              />
+            <div key={field.id} className="grid grid-cols-[1.25rem_1fr_5rem_2rem] items-center gap-2">
+              <span
+                className="inline-flex size-5 items-center justify-center"
+                title={field.source === "manual" ? t("form.sourceManual") : t("form.sourceExtracted")}
+              >
+                {field.source === "manual" ? (
+                  <PenLine className="size-3.5 text-amber-500" />
+                ) : (
+                  <Bot className="size-3.5 text-brand" />
+                )}
+              </span>
+              <div className="flex items-center gap-1">
+                <Input
+                  {...register(`lineItems.${index}.description`)}
+                  placeholder={t("form.itemDescriptionPlaceholder")}
+                  className="h-10 flex-1 text-sm"
+                />
+                <SpeechInputButton onResult={(text) => setValue(`lineItems.${index}.description`, text)} className="size-8" />
+              </div>
               <Input
                 {...register(`lineItems.${index}.amount`)}
                 type="text"
@@ -232,18 +256,19 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
               />
               <button
                 type="button"
-                onClick={() => fields.length > 1 ? remove(index) : setValue(`lineItems.${index}`, { description: "", amount: "" })}
+                onClick={() => fields.length > 1 ? remove(index) : setValue(`lineItems.${index}`, { description: "", amount: "", source: "manual" })}
                 className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={t("form.removeItem")}
               >
                 <X className="size-4" />
               </button>
+              <input type="hidden" {...register(`lineItems.${index}.source`)} />
             </div>
           ))}
 
           <button
             type="button"
-            onClick={() => append({ description: "", amount: "" })}
+            onClick={() => append({ description: "", amount: "", source: "manual" })}
             className="flex min-h-[2.5rem] items-center justify-center gap-1.5 rounded-md border border-dashed border-input text-sm text-muted-foreground transition-colors hover:border-brand hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <Plus className="size-4" />
@@ -279,11 +304,20 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
         <label htmlFor="notes" className="text-sm font-medium text-foreground">
           {t("form.notes")}
         </label>
-        <textarea
-          id="notes"
-          className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30 md:text-sm"
-          {...register("notes")}
-        />
+        <div className="flex items-start gap-2">
+          <textarea
+            id="notes"
+            className="flex min-h-[80px] flex-1 rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30 md:text-sm"
+            {...register("notes")}
+          />
+          <SpeechInputButton
+            onResult={(text) => {
+              const current = form.getValues("notes");
+              setValue("notes", current ? `${current} ${text}` : text);
+            }}
+            className="mt-2 size-10"
+          />
+        </div>
       </div>
 
       <div className="sticky bottom-0 pt-4 pb-safe">
