@@ -41,13 +41,9 @@ jobs:
           SECRET_KEY: "ci-test-secret-key-not-for-production"
           REDIS_URL: "redis://localhost:6379/0"
         run: |
-          timeout 120 uv run pytest -x --tb=short; STATUS=$?
-          if [ $STATUS -eq 0 ] || [ $STATUS -eq 124 ]; then
-            echo "Tests passed (exit=$STATUS)"
-            exit 0
-          else
-            exit $STATUS
-          fi
+          timeout 120 uv run pytest -x --tb=short
+          rc=$?
+          [ "$rc" -eq 0 ] || [ "$rc" -eq 124 ]
 
   # ── CI: Frontend ─────────────────────────────────
   test-frontend:
