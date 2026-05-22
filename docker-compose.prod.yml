@@ -1,0 +1,89 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: engez-frontend
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.engez.rule=Host(`omarahmedayoub.xyz`)"
+      - "traefik.http.routers.engez.entrypoints=websecure"
+      - "traefik.http.routers.engez.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.engez.loadbalancer.server.port=80"
+      - "traefik.docker.network=omar_web"
+    networks:
+      - engez-internal
+      - traefik-web
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: engez-api
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379/0
+      - ENVIRONMENT=production
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/health\")'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - engez-internal
+
+  db:
+    image: postgres:16-alpine
+    container_name: engez-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - engez_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - engez-internal
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: engez-redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - engez_redis_data:/data
+    networks:
+      - engez-internal
+
+networks:
+  engez-internal:
+    driver: bridge
+  traefik-web:
+    external: true
+    name: omar_web
+
+volumes:
+  engez_pgdata:
+  engez_redis_data:
