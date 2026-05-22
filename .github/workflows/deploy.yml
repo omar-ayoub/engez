@@ -39,7 +39,8 @@ jobs:
         env:
           DATABASE_URL: "sqlite+aiosqlite:///./test.db"
           SECRET_KEY: "ci-test-secret-key-not-for-production"
-        run: uv run pytest -x
+          REDIS_URL: "redis://localhost:6379/0"
+        run: uv run pytest -x -v
 
   # ── CI: Frontend ─────────────────────────────────
   test-frontend:
