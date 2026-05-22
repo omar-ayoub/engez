@@ -184,7 +184,7 @@ test.describe("Analytics Dashboard", () => {
 
     const exportBtn = page.getByRole("button", { name: /export|تصدير/i }).first();
     if (await exportBtn.isVisible()) {
-      const [download] = await Promise.all([
+      await Promise.all([
         page.waitForEvent("download").catch(() => null),
         exportBtn.click(),
       ]);

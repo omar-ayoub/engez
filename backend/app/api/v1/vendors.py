@@ -20,8 +20,6 @@ async def list_vendors(
     user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ):
-    if_modified_since = request.headers.get("If-Modified-Since")
-
     query = select(VendorCache).where(VendorCache.company_id == scope.company_id).order_by(VendorCache.name)
     result = await db.execute(query)
     vendors = result.scalars().all()

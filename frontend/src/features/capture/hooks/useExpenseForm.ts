@@ -121,7 +121,7 @@ export function useExpenseForm(options: UseExpenseFormOptions = {}) {
 
   // Keep a ref to the latest saveDraft so the unmount effect can call it
   const saveDraftRef = useRef(saveDraft);
-  saveDraftRef.current = saveDraft;
+  useEffect(() => { saveDraftRef.current = saveDraft; }, [saveDraft]);
 
   useEffect(() => {
     autoSaveTimerRef.current = setInterval(() => {

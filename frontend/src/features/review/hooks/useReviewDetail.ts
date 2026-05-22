@@ -43,8 +43,7 @@ export function useReviewDetail(expenseId: string) {
     try {
       const result = await refreshReceiptUrl(expenseId);
       setData((prev) => prev ? { ...prev, receipt_url: result.receipt_url } : prev);
-    } catch {
-    }
+    } catch { /* receipt refresh is best-effort */ }
   }, [expenseId]);
 
   const handleReceiptError = useCallback(() => {

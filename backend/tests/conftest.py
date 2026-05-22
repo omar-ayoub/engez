@@ -1,41 +1,39 @@
+import hashlib
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from unittest.mock import AsyncMock as _AsyncMock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import JSON
+from sqlalchemy.dialects.postgresql import JSONB as PgJSONB
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.sql.elements import TextClause
 
-from unittest.mock import AsyncMock as _AsyncMock
 from app.core.security import create_access_token
+from app.main import app
+from app.models.base import Base
+from app.models.category import Category
+from app.models.company import Company
+from app.models.project import Project
+from app.models.user import User
+from app.models.vendor_cache import VendorCache
 
 
 def _fake_hash(password: str) -> str:
-    import hashlib
     return f"$2b$12$fakehash{hashlib.sha256(password.encode()).hexdigest()[:40]}"
 
 
 HASHED_PASSWORD = _fake_hash("password123")
 HASHED_ADMIN = _fake_hash("admin123")
-from app.models.base import Base
-from app.models.company import Company
-from app.models.user import User
-from app.models.category import Category
-from app.models.project import Project
-from app.models.vendor_cache import VendorCache
-from app.models.expense import Expense
-from app.main import app
 
 
 DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
 test_engine = create_async_engine(DATABASE_URL, echo=False)
-
-from sqlalchemy.dialects.postgresql import JSONB as PgJSONB
-from sqlalchemy import JSON, text as sa_text
-from sqlalchemy.sql.elements import TextClause
 
 
 for table in Base.metadata.sorted_tables:
@@ -188,7 +186,6 @@ async def auth_client(db_session: AsyncSession, seed_data):
     app.dependency_overrides[get_tenant_scope] = lambda: TenantScope(seed_data["company"].id)
     app.dependency_overrides[get_db] = override_get_db
 
-    from unittest.mock import patch as _patch
     import app.api.v1.voice as _voice_router
     import app.api.v1.receipts as _receipt_router
 

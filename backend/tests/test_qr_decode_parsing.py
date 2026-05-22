@@ -1,6 +1,6 @@
 """Tests for ETA QR URL parsing logic — the regex-based parser in qr_decode.py."""
 
-from app.services.qr_decode import _parse_eta_url, ETAQRData
+from app.services.qr_decode import _parse_eta_url
 
 
 class TestParseETAUrl:

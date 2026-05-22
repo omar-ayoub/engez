@@ -23,7 +23,7 @@ export function usePushSubscription() {
       });
 
       await subscribePush(subscription.toJSON());
-    } catch {
+    } catch { /* push subscription may fail silently */
     } finally {
       setLoading(false);
     }
@@ -38,7 +38,7 @@ export function usePushSubscription() {
         await subscription.unsubscribe();
       }
       await unsubscribePush();
-    } catch {
+    } catch { /* push unsubscribe may fail silently */
     } finally {
       setLoading(false);
     }

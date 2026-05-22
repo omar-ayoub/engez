@@ -68,7 +68,7 @@ async def send_batched_accountant_notification(
         select(User).where(
             User.company_id == company_id,
             User.role.in_(["accountant", "admin"]),
-            User.is_active == True,
+            User.is_active.is_(True),
             User.push_subscription.isnot(None),
         )
     )

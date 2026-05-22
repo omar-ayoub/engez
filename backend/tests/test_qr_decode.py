@@ -1,4 +1,3 @@
-import pytest
 from app.services.qr_decode import decode_eta_qr
 
 

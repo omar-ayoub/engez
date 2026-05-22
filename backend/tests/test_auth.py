@@ -3,14 +3,11 @@
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch
 
-from app.core.security import hash_password
 from app.core.database import get_db
 from app.models.user import User
-from app.models.company import Company
 from app.main import app
-from tests.conftest import TestSessionFactory
 
 
 @pytest_asyncio.fixture
@@ -81,7 +78,7 @@ class TestLogin:
     async def test_brute_force_lockout(self, unauth_client, seed_data, db_session):
         """After 5 failed attempts, account should be locked."""
         # Reset failed attempts first
-        from sqlalchemy import select, update
+        from sqlalchemy import update
 
         await db_session.execute(
             update(User)

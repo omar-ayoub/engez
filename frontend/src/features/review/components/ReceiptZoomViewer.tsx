@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ReceiptZoomViewerProps {
@@ -7,7 +7,7 @@ interface ReceiptZoomViewerProps {
   onRefreshError: () => void;
 }
 
-export default function ReceiptZoomViewer({ src, onRefreshed: _onRefreshed, onRefreshError }: ReceiptZoomViewerProps) {
+export default function ReceiptZoomViewer({ src, onRefreshError }: ReceiptZoomViewerProps) {
   const { t } = useTranslation("review");
   const [error, setError] = useState(false);
   const [scale, setScale] = useState(1);
@@ -16,13 +16,12 @@ export default function ReceiptZoomViewer({ src, onRefreshed: _onRefreshed, onRe
   const isDragging = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
   const hasAutoRefreshed = useRef(false);
-  const currentSrc = useRef(src);
+  const [isDraggingState, setIsDraggingState] = useState(false);
 
-  if (src !== currentSrc.current) {
-    currentSrc.current = src;
+  useEffect(() => {
     setError(false);
     hasAutoRefreshed.current = false;
-  }
+  }, [src]);
 
   const handleImageError = useCallback(() => {
     if (!hasAutoRefreshed.current) {
@@ -40,6 +39,7 @@ export default function ReceiptZoomViewer({ src, onRefreshed: _onRefreshed, onRe
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     isDragging.current = true;
+    setIsDraggingState(true);
     lastPos.current = { x: e.clientX, y: e.clientY };
   }, []);
 
@@ -53,6 +53,7 @@ export default function ReceiptZoomViewer({ src, onRefreshed: _onRefreshed, onRe
 
   const handlePointerUp = useCallback(() => {
     isDragging.current = false;
+    setIsDraggingState(false);
   }, []);
 
   const handleDoubleClick = useCallback(() => {
@@ -114,7 +115,7 @@ export default function ReceiptZoomViewer({ src, onRefreshed: _onRefreshed, onRe
         style={{
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
           transformOrigin: "center center",
-          transition: isDragging.current ? "none" : "transform 0.1s ease-out",
+          transition: isDraggingState ? "none" : "transform 0.1s ease-out",
         }}
       >
         <img

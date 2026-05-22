@@ -39,7 +39,7 @@ from app.schemas.review import (
     CorrectionFieldMetricSchema,
     DailyCorrectionTrendSchema,
 )
-from app.services.review_queue import get_review_queue, get_review_detail, get_next_pending_id
+from app.services.review_queue import get_review_queue, get_review_detail
 from app.services.review_actions import (
     approve as approve_action,
     reject as reject_action,

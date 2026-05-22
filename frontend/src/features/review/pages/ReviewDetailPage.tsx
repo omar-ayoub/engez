@@ -26,7 +26,7 @@ export default function ReviewDetailPage() {
     try {
       const result = await handleApprove(data.id, data.review_version);
       setActionResult({ status: "approved", nextId: result.next_pending_id });
-    } catch {}
+    } catch { /* handled by UI */ }
   }, [data, handleApprove]);
 
   const onReject = useCallback(async (reason: string) => {
@@ -35,7 +35,7 @@ export default function ReviewDetailPage() {
       const result = await handleReject(data.id, data.review_version, reason);
       setActionResult({ status: "rejected", nextId: result.next_pending_id });
       setRejectDialogOpen(false);
-    } catch {}
+    } catch { /* handled by UI */ }
   }, [data, handleReject]);
 
   const onCorrect = useCallback(async (fieldName: string, correctedValue: string | number) => {

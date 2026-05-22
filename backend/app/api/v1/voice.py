@@ -53,7 +53,7 @@ async def extract_voice(
 
     projects_result = await db.execute(
         select(Project.name_ar, Project.name).where(
-            Project.company_id == scope.company_id, Project.is_active == True
+            Project.company_id == scope.company_id, Project.is_active.is_(True)
         )
     )
     project_rows = projects_result.all()

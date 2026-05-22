@@ -89,7 +89,6 @@ async def test_manual_export_duplicate_check_scoped_to_company(
     integration_config,
 ):
     """ExportRecord duplicate check must include company_id filter."""
-    company_id = integration_config["company_id"]
     expense_id = integration_config["expense_id"]
 
     # Plant a "success" export record under a DIFFERENT company

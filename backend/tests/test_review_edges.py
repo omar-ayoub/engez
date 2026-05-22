@@ -5,7 +5,6 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.expense import Expense
-from app.models.correction import CorrectionFeedback
 
 
 # ── Bulk approve schema rejects >50 items ────────────────────────────
