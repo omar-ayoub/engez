@@ -76,8 +76,8 @@ async def _execute_export(db: AsyncSession, record: ExportRecord, config: Integr
         logger.warning("Export %s failed (attempt %d): %s", record.id, record.attempt_count, exc)
         record.error_message = str(exc)[:1000]
 
+        record.status = "failed"
         if record.attempt_count >= MAX_RETRIES:
-            record.status = "failed"
             record.next_retry_at = None
         else:
             delay = BACKOFF_DELAYS[min(record.attempt_count - 1, len(BACKOFF_DELAYS) - 1)]

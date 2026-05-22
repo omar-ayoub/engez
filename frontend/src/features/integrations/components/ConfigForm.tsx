@@ -42,7 +42,7 @@ export default function ConfigForm({ requiredFields, onSave, onTest, testing, te
               type={field.includes("password") || field.includes("token") || field.includes("secret") ? "password" : "text"}
               value={credentials[field] || ""}
               onChange={(e) => update(field, e.target.value)}
-              className="w-full px-3 py-2 bg-card border border-input rounded text-foreground focus:border-ring focus:outline-none"
+              className="w-full px-3 py-2 bg-card border border-input rounded text-foreground focus:border-ring focus:outline-none min-h-[44px]"
               dir="ltr"
             />
           </div>

@@ -130,7 +130,7 @@ test.describe("Analytics Dashboard", () => {
     await page.goto("/analytics");
 
     await expect(
-      page.getByText("تحليلات الإنفاق").or(page.getByText("Spend Analytics"))
+      page.getByText("لوحة التحليلات").or(page.getByText("Analytics Dashboard"))
     ).toBeVisible();
   });
 
@@ -275,5 +275,24 @@ test.describe("RTL Layout", () => {
       );
       expect(direction).toBe("ltr");
     }
+  });
+
+  test("switching to English sets computed direction to LTR", async ({ page }) => {
+    await loginAsAdmin(page);
+    await mockAnalyticsApis(page);
+
+    // Set language to English via localStorage before navigation
+    await page.addInitScript(() => {
+      localStorage.setItem("i18nextLng", "en");
+    });
+    await page.goto("/analytics");
+
+    const computedDir = await page.locator("html").evaluate(
+      (el) => getComputedStyle(el).direction
+    );
+    expect(computedDir).toBe("ltr");
+
+    const attrDir = await page.locator("html").getAttribute("dir");
+    expect(attrDir).toBe("ltr");
   });
 });
