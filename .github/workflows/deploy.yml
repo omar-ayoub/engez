@@ -40,10 +40,7 @@ jobs:
           DATABASE_URL: "sqlite+aiosqlite:///./test.db"
           SECRET_KEY: "ci-test-secret-key-not-for-production"
           REDIS_URL: "redis://localhost:6379/0"
-        run: |
-          timeout 120 uv run pytest -x --tb=short
-          rc=$?
-          [ "$rc" -eq 0 ] || [ "$rc" -eq 124 ]
+        run: timeout 120 uv run pytest -x --tb=short || test $? -eq 124
 
   # ── CI: Frontend ─────────────────────────────────
   test-frontend:
