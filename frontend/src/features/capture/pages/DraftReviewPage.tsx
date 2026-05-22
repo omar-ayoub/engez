@@ -33,10 +33,14 @@ export default function DraftReviewPage() {
 
   if (selectedDraft) {
     const extraction = selectedDraft.aiExtraction as Record<string, unknown> | undefined;
+    const itemsStr = (extraction?.items as string) || "";
+    const lineItems = itemsStr
+      ? itemsStr.split("\n").filter(Boolean).map((line) => ({ description: line, amount: "" }))
+      : [{ description: "", amount: "" }];
     const initialData: Partial<ExpenseFormValues> = {
       amount: (extraction?.amount as number) || 0,
       vendor: (extraction?.vendor as string) || "",
-      items: (extraction?.items as string) || "",
+      lineItems,
       captureMode: (selectedDraft.captureMode as ExpenseFormValues["captureMode"]) || "manual",
     };
 

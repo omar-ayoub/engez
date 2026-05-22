@@ -30,9 +30,9 @@ export default function CapturePage() {
     });
   };
 
-  const handleReceiptExtraction = (result: ReceiptExtractionResult) => {
+  const handleReceiptExtraction = (result: ReceiptExtractionResult, blob: Blob) => {
     setReceiptResult({
-      blob: new Blob(),
+      blob,
       extraction: result.extraction as unknown as Record<string, unknown>,
       qr_detected: result.qr_detected,
       receipt_url: result.receipt_url,
@@ -42,19 +42,34 @@ export default function CapturePage() {
   const getMergedInitialData = () => {
     if (currentMode === "voice" && voiceResult?.extraction) {
       const e = voiceResult.extraction as Record<string, unknown>;
+      const itemsStr = (e.items as string) || "";
+      const lineItems = itemsStr
+        ? itemsStr.split("\n").filter(Boolean).map((line) => ({ description: line, amount: "" }))
+        : undefined;
       return {
         amount: (e.amount as number) || undefined,
         vendor: (e.vendor as string) || undefined,
-        items: (e.items as string) || undefined,
+        lineItems,
         captureMode: "voice" as const,
       };
     }
     if (currentMode === "receipt" && receiptResult?.extraction) {
       const e = receiptResult.extraction as Record<string, unknown>;
+      const rawLineItems = e.line_items as Array<{ description: string; quantity: number | null; amount: number | null }> | undefined;
+      let lineItems: Array<{ description: string; amount: string }> | undefined;
+      if (rawLineItems && rawLineItems.length > 0) {
+        lineItems = rawLineItems.map((li) => ({
+          description: li.quantity != null && li.quantity > 1 ? `${li.quantity}x ${li.description}` : li.description,
+          amount: li.amount != null ? String(li.amount) : "",
+        }));
+      } else {
+        const itemsStr = (e.items as string) || "";
+        lineItems = itemsStr ? [{ description: itemsStr, amount: "" }] : undefined;
+      }
       return {
         amount: (e.amount as number) || undefined,
         vendor: (e.vendor as string) || undefined,
-        items: (e.items as string) || undefined,
+        lineItems,
         captureMode: "receipt" as const,
       };
     }
@@ -66,10 +81,14 @@ export default function CapturePage() {
         qr_detected: receiptResult.qr_detected,
         qr_data: receiptResult.qr_data ?? null,
       });
+      const itemsStr = merged.items || "";
+      const lineItems = itemsStr
+        ? itemsStr.split("\n").filter(Boolean).map((line) => ({ description: line, amount: "" }))
+        : undefined;
       return {
         amount: merged.amount || undefined,
         vendor: merged.vendor || undefined,
-        items: merged.items || undefined,
+        lineItems,
         captureMode: "combined" as const,
       };
     }
@@ -110,7 +129,7 @@ export default function CapturePage() {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <ExpenseForm initialData={getMergedInitialData()} onSubmitSuccess={clearAll}>
+        <ExpenseForm initialData={getMergedInitialData()} onSubmitSuccess={clearAll} initialReceiptBlob={receiptResult?.blob} initialVoiceBlob={voiceResult?.blob}>
           {(currentMode === "voice" || currentMode === "combined") && (
             <VoiceRecordButton onExtraction={handleVoiceExtraction} />
           )}

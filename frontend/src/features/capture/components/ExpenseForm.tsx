@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useFieldArray } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useExpenseForm, type ExpenseFormValues } from "../hooks/useExpenseForm";
+import { useExpenseForm, type ExpenseFormValues, type LineItem } from "../hooks/useExpenseForm";
 import VoiceRecordButton, { type VoiceExtractionResult } from "./VoiceRecordButton";
 import ReceiptCamera, { type ReceiptExtractionResult } from "./ReceiptCamera";
 import CategoryGrid from "./CategoryGrid";
@@ -9,32 +10,66 @@ import ConfidenceBadge from "./ConfidenceBadge";
 import { confidenceBorderClass } from "../utils/confidence";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { QrCode, AlertCircle } from "lucide-react";
+import { QrCode, AlertCircle, Plus, X } from "lucide-react";
 
 interface ExpenseFormProps {
   initialData?: Partial<ExpenseFormValues>;
   confidence?: Record<string, number>;
   onSubmitSuccess?: () => void;
   children?: React.ReactNode;
+  initialReceiptBlob?: Blob | null;
+  initialVoiceBlob?: Blob | null;
 }
 
-export default function ExpenseForm({ initialData, confidence: externalConfidence, onSubmitSuccess, children }: ExpenseFormProps) {
+export default function ExpenseForm({ initialData, confidence: externalConfidence, onSubmitSuccess, children, initialReceiptBlob, initialVoiceBlob }: ExpenseFormProps) {
   const { t } = useTranslation("capture");
   const [confidence, setConfidence] = useState<Record<string, number> | undefined>(externalConfidence);
   const [etaVerified, setEtaVerified] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(initialData?.categoryId ?? "");
   const [error, setError] = useState<string | null>(null);
-  const { form, onSubmit, isSubmitting } = useExpenseForm({ initialData, onSubmitSuccess });
+
+  // Sync category and blobs when props change (e.g. after AI extraction)
+  useEffect(() => {
+    if (initialData?.categoryId) setSelectedCategory(initialData.categoryId);
+  }, [initialData?.categoryId]);
+  const [receiptBlob, setReceiptBlob] = useState<Blob | null>(initialReceiptBlob ?? null);
+  const [voiceBlob, setVoiceBlob] = useState<Blob | null>(initialVoiceBlob ?? null);
+  useEffect(() => { if (initialReceiptBlob) setReceiptBlob(initialReceiptBlob); }, [initialReceiptBlob]);
+  useEffect(() => { if (initialVoiceBlob) setVoiceBlob(initialVoiceBlob); }, [initialVoiceBlob]);
+  const { form, onSubmit, isSubmitting } = useExpenseForm({ initialData, onSubmitSuccess, receiptBlob, voiceBlob });
   const { register, setValue, formState: { errors } } = form;
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "lineItems",
+  });
+
+  // Auto-sum line item amounts into total
+  useEffect(() => {
+    const { unsubscribe } = form.watch((values) => {
+      if (!values.lineItems) return;
+      const sum = values.lineItems.reduce((acc, li) => {
+        const n = parseFloat(li?.amount ?? "");
+        return acc + (Number.isFinite(n) ? n : 0);
+      }, 0);
+      if (sum > 0) setValue("amount", sum);
+    });
+    return unsubscribe;
+  }, [form, setValue]);
+
   const handleVoiceExtraction = useCallback(
-    (result: VoiceExtractionResult) => {
+    (result: VoiceExtractionResult, blob?: Blob) => {
+      if (blob) setVoiceBlob(blob);
       setError(null);
       if (result.extraction) {
         const e = result.extraction;
         if (e.amount != null) setValue("amount", e.amount);
         if (e.vendor) setValue("vendor", e.vendor);
-        if (e.items) setValue("items", e.items);
+        if (e.items) {
+          const lines = e.items.split("\n").filter(Boolean);
+          const lineItems: LineItem[] = lines.map((line) => ({ description: line, amount: "" }));
+          setValue("lineItems", lineItems.length ? lineItems : [{ description: e.items, amount: "" }]);
+        }
         if (e.currency) setValue("currency", e.currency);
         if (e.category) {
           setValue("categoryId", e.category);
@@ -53,13 +88,22 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
   }, []);
 
   const handleReceiptExtraction = useCallback(
-    (result: ReceiptExtractionResult) => {
+    (result: ReceiptExtractionResult, blob?: Blob) => {
+      if (blob) setReceiptBlob(blob);
       setError(null);
       if (result.extraction) {
         const e = result.extraction;
         if (e.amount != null) setValue("amount", e.amount);
         if (e.vendor) setValue("vendor", e.vendor);
-        if (e.items) setValue("items", e.items);
+        if (e.line_items && e.line_items.length > 0) {
+          const lineItems: LineItem[] = e.line_items.map((li) => ({
+            description: li.quantity != null && li.quantity > 1 ? `${li.quantity}x ${li.description}` : li.description,
+            amount: li.amount != null ? String(li.amount) : "",
+          }));
+          setValue("lineItems", lineItems);
+        } else if (e.items) {
+          setValue("lineItems", [{ description: e.items, amount: "" }]);
+        }
         if (e.vendor_tax_reg && e.vendor) setValue("vendor", e.vendor);
         if (e.date) setValue("notes", e.date);
         if (e.category) {
@@ -156,18 +200,56 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
 
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center gap-1.5">
-          <label htmlFor="items" className="text-sm font-medium text-foreground">
+          <label className="text-sm font-medium text-foreground">
             {t("form.items")}
           </label>
           {confidence?.items != null && <ConfidenceBadge score={confidence.items} />}
         </div>
-        <Input
-          id="items"
-          type="text"
-          placeholder={t("form.itemsPlaceholder")}
-          className={confidenceBorderClass(confidence?.items)}
-          {...register("items")}
-        />
+
+        <div className="flex flex-col gap-2 rounded-lg border border-input p-3">
+          {fields.length > 0 && (
+            <div className="grid grid-cols-[1fr_5rem_2rem] gap-2 text-xs text-muted-foreground">
+              <span>{t("form.itemDescription")}</span>
+              <span className="text-end">{t("form.itemAmount")}</span>
+              <span />
+            </div>
+          )}
+
+          {fields.map((field, index) => (
+            <div key={field.id} className="grid grid-cols-[1fr_5rem_2rem] items-center gap-2">
+              <Input
+                {...register(`lineItems.${index}.description`)}
+                placeholder={t("form.itemDescriptionPlaceholder")}
+                className="h-10 text-sm"
+              />
+              <Input
+                {...register(`lineItems.${index}.amount`)}
+                type="text"
+                inputMode="decimal"
+                dir="ltr"
+                placeholder="0"
+                className="h-10 text-sm font-mono tabular-nums text-end"
+              />
+              <button
+                type="button"
+                onClick={() => fields.length > 1 ? remove(index) : setValue(`lineItems.${index}`, { description: "", amount: "" })}
+                className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={t("form.removeItem")}
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => append({ description: "", amount: "" })}
+            className="flex min-h-[2.5rem] items-center justify-center gap-1.5 rounded-md border border-dashed border-input text-sm text-muted-foreground transition-colors hover:border-brand hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <Plus className="size-4" />
+            {t("form.addItem")}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
