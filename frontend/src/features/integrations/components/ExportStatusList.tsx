@@ -23,7 +23,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function ExportStatusList({ items, onRetry }: Props) {
-  const { t } = useTranslation("integrations");
+  const { t, i18n } = useTranslation("integrations");
+  const dateLocale = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   if (!items.length) {
     return (
@@ -48,13 +49,13 @@ export default function ExportStatusList({ items, onRetry }: Props) {
                 {item.expense_id.slice(0, 8)}...
               </span>
               <span className="text-xs text-muted-foreground">
-                {new Date(item.created_at).toLocaleDateString("ar-EG")}
+                {new Date(item.created_at).toLocaleDateString(dateLocale)}
               </span>
             </div>
             {item.status === "failed" && (
               <button
                 onClick={() => onRetry(item.expense_id)}
-                className="px-3 py-1 bg-secondary hover:bg-secondary/80 rounded text-xs min-h-[36px]"
+                className="px-3 py-1 bg-secondary hover:bg-secondary/80 rounded text-xs min-h-[44px]"
               >
                 {t("exports.retry")}
               </button>

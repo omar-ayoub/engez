@@ -177,7 +177,7 @@ async def _check_statistical_outlier(
     variance = sum((x - mean) ** 2 for x in values) / (n - 1)
     std_val = variance ** 0.5
 
-    if std_val == 0:
+    if std_val < 1e-10:
         return None
 
     if amount > avg_val + 2 * std_val:

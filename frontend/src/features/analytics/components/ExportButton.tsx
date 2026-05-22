@@ -19,9 +19,16 @@ export default function ExportButton({ period }: Props) {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape" && open) setOpen(false);
+    }
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+    if (open) document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
 
   const handleExport = (format: "csv" | "excel", view: string) => {
     if (!accessToken) return;
@@ -79,16 +86,18 @@ export default function ExportButton({ period }: Props) {
                 <button
                   role="menuitem"
                   onClick={() => handleExport("csv", view.key)}
-                  className="flex-1 px-2 py-1 bg-secondary hover:bg-secondary/80 rounded text-xs min-h-[36px]"
+                  className="flex-1 px-2 py-1 bg-secondary hover:bg-secondary/80 rounded text-xs min-h-[44px]"
+                  aria-label={`${t("export.csv")} - ${view.label}`}
                 >
-                  CSV
+                  {t("export.csv")}
                 </button>
                 <button
                   role="menuitem"
                   onClick={() => handleExport("excel", view.key)}
-                  className="flex-1 px-2 py-1 bg-secondary hover:bg-secondary/80 rounded text-xs min-h-[36px]"
+                  className="flex-1 px-2 py-1 bg-secondary hover:bg-secondary/80 rounded text-xs min-h-[44px]"
+                  aria-label={`${t("export.excel")} - ${view.label}`}
                 >
-                  Excel
+                  {t("export.excel")}
                 </button>
               </div>
             </div>

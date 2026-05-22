@@ -22,7 +22,7 @@ from app.schemas.integration import (
 )
 from app.services.exporters import EXPORTERS, get_exporter
 from app.services.crypto import encrypt
-from app.services.export_orchestrator import trigger_export, cancel_pending_exports
+from app.services.export_orchestrator import trigger_export, cancel_pending_exports, _execute_export
 from app.services.exporters.csv_daftra import CsvDaftraExporter
 
 router = APIRouter(prefix="/integrations", tags=["integrations"])
@@ -148,6 +148,7 @@ async def manual_export(
     existing = await db.execute(
         select(ExportRecord).where(
             ExportRecord.expense_id == expense_id,
+            ExportRecord.company_id == scope.company_id,
             ExportRecord.status.in_(["pending", "success"]),
         )
     )
@@ -178,10 +179,22 @@ async def retry_export(
     if not record:
         raise HTTPException(status_code=404, detail="No failed export found")
 
+    config_result = await db.execute(
+        select(IntegrationConfig).where(
+            IntegrationConfig.company_id == scope.company_id,
+            IntegrationConfig.status == "active",
+        )
+    )
+    config = config_result.scalar_one_or_none()
+    if not config:
+        raise HTTPException(status_code=400, detail="No active integration configured")
+
     record.status = "pending"
     record.next_retry_at = None
     await db.commit()
-    return {"export_id": record.id, "status": "pending", "attempt_count": record.attempt_count}
+
+    await _execute_export(db, record, config)
+    return {"export_id": record.id, "status": record.status, "attempt_count": record.attempt_count}
 
 
 @router.get("/exports", response_model=ExportListResponse)
@@ -223,8 +236,13 @@ async def csv_export(
     user: User = Depends(require_accountant_or_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    from_dt = datetime.fromisoformat(date_from).replace(hour=0, minute=0, second=0)
-    to_dt = datetime.fromisoformat(date_to).replace(hour=23, minute=59, second=59)
+    try:
+        from_dt = datetime.fromisoformat(date_from).replace(hour=0, minute=0, second=0)
+        to_dt = datetime.fromisoformat(date_to).replace(hour=23, minute=59, second=59)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Invalid date format. Use YYYY-MM-DD.")
+    if from_dt > to_dt:
+        raise HTTPException(status_code=422, detail="date_from must be before date_to")
 
     csv_content = await CsvDaftraExporter.generate_csv(db, scope.company_id, from_dt, to_dt)
 

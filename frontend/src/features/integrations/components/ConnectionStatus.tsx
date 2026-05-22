@@ -25,7 +25,7 @@ export default function ConnectionStatus({ status, lastError }: Props) {
         </span>
       </div>
       {lastError && (
-        <p className="mt-2 text-sm text-destructive">
+        <p className="mt-2 text-sm text-destructive break-words">
           {t("status.lastError")}: {lastError}
         </p>
       )}

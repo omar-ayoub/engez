@@ -27,6 +27,7 @@ Thumbs.db
 frontend/playwright-report/
 frontend/test-results/
 frontend/dev-dist/
+test-screenshots/
 
 # Temp planning docs
 glm-structure-fix-plan.md

@@ -7,12 +7,13 @@ interface SummaryProps {
 }
 
 export default function DashboardSummary({ totalSpend, expenseCount, projectCount }: SummaryProps) {
-  const { t } = useTranslation("analytics");
+  const { t, i18n } = useTranslation("analytics");
+  const numLocale = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   const cards = [
-    { label: t("summary.totalSpend"), value: `${totalSpend.toLocaleString("ar-EG")} ج.م`, color: "text-success" },
-    { label: t("summary.expenseCount"), value: expenseCount.toLocaleString("ar-EG"), color: "text-primary" },
-    { label: t("summary.projectCount"), value: projectCount.toLocaleString("ar-EG"), color: "text-purple-400" },
+    { label: t("summary.totalSpend"), value: `${totalSpend.toLocaleString(numLocale)} ج.م`, color: "text-success" },
+    { label: t("summary.expenseCount"), value: expenseCount.toLocaleString(numLocale), color: "text-primary" },
+    { label: t("summary.projectCount"), value: projectCount.toLocaleString(numLocale), color: "text-purple-400" },
   ];
 
   return (

@@ -33,7 +33,7 @@ export default function IntegrationSettings() {
   useEffect(() => {
     getExports()
       .then((res) => setExports(res.items))
-      .catch(() => {});
+      .catch((err) => console.error("Failed to load exports:", err));
   }, []);
 
   const handleSave = useCallback(async (credentials: Record<string, string>) => {

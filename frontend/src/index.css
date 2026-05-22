@@ -57,9 +57,7 @@
   --radius: 0.625rem;
 }
 
-:root {
-  direction: rtl;
-}
+/* direction is set dynamically via dir attribute on <html> — see useDirection hook */
 
 .amount-display {
   direction: ltr;
