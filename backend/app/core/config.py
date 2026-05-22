@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     R2_SECRET_KEY: str = ""
     R2_BUCKET: str = "engez-receipts"
     R2_PUBLIC_URL: str = ""
+    UPLOAD_DIR: str = "./uploads"
     VAPID_PRIVATE_KEY: str = ""
     VAPID_PUBLIC_KEY: str = ""
     VAPID_CLAIMS_EMAIL: str = ""

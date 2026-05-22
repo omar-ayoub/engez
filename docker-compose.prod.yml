@@ -36,6 +36,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    volumes:
+      - engez_uploads:/app/uploads
     healthcheck:
       test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/health\")'"]
       interval: 30s
@@ -87,3 +89,4 @@ networks:
 volumes:
   engez_pgdata:
   engez_redis_data:
+  engez_uploads:

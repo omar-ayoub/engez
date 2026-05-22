@@ -22,6 +22,9 @@ build/
 .idea/
 Thumbs.db
 
+# Local uploads (dev)
+uploads/
+
 # Playwright artifacts
 .playwright-mcp/
 frontend/playwright-report/

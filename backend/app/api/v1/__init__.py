@@ -14,6 +14,7 @@ from app.api.v1.notifications import router as notifications_router
 from app.api.v1.integrations import router as integrations_router
 from app.api.v1.anomalies import router as anomalies_router
 from app.api.v1.analytics import router as analytics_router
+from app.api.v1.uploads import router as uploads_router
 
 v1_router = APIRouter(prefix="/api/v1")
 v1_router.include_router(auth_router)
@@ -30,3 +31,4 @@ v1_router.include_router(notifications_router)
 v1_router.include_router(integrations_router)
 v1_router.include_router(anomalies_router)
 v1_router.include_router(analytics_router)
+v1_router.include_router(uploads_router)
