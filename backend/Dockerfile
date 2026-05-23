@@ -14,7 +14,9 @@ RUN uv sync --no-dev --frozen 2>/dev/null || uv sync --no-dev
 
 COPY . .
 
-RUN adduser --disabled-password --no-create-home appuser
+RUN adduser --disabled-password --no-create-home appuser \
+ && mkdir -p /app/uploads \
+ && chown appuser:appuser /app/uploads
 USER appuser
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
@@ -14,6 +15,8 @@ from app.services.ai_voice import transcribe_and_extract
 from app.services.r2_storage import upload_blob
 from app.services.rate_limiter import check_rate_limit
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/voice", tags=["voice"])
 
@@ -60,9 +63,21 @@ async def extract_voice(
     project_names = [r[0] for r in project_rows] + [r[1] for r in project_rows]
 
     mime_type = audio.content_type or "audio/webm"
-    transcript, extraction = await transcribe_and_extract(
-        audio_bytes, scope.company_id, project_names, db, mime_type
-    )
+    try:
+        transcript, extraction = await transcribe_and_extract(
+            audio_bytes, scope.company_id, project_names, db, mime_type
+        )
+    except Exception:
+        logger.exception("Voice processing failed for company=%s", scope.company_id)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail={
+                "detail": "تعذر معالجة التسجيل الصوتي",
+                "detail_en": "Could not process voice recording",
+                "transcript": None,
+                "extraction": None,
+            },
+        )
 
     if not transcript:
         raise HTTPException(
