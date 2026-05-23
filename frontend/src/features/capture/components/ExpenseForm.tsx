@@ -136,6 +136,10 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
     [setValue]
   );
 
+  const handleSpeechError = useCallback((err: string) => {
+    setError(err);
+  }, []);
+
   const handleVendorChange = useCallback(
     (value: string) => {
       setValue("vendor", value);
@@ -186,7 +190,7 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
             aria-describedby={errors.amount ? "amount-error" : undefined}
             {...register("amount", { required: t("form.amount") })}
           />
-          <SpeechInputButton onResult={(text) => setValue("amount", text as unknown as number)} className="size-10" />
+          <SpeechInputButton onResult={(text) => setValue("amount", text as unknown as number)} onError={handleSpeechError} className="size-10" />
         </div>
         {errors.amount && (
           <p id="amount-error" className="text-xs text-destructive">{errors.amount.message}</p>
@@ -204,7 +208,7 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
           <div className="flex-1">
             <VendorAutocomplete onChange={handleVendorChange} value={form.watch("vendor")} />
           </div>
-          <SpeechInputButton onResult={(text) => handleVendorChange(text)} className="mt-2 size-10" />
+          <SpeechInputButton onResult={(text) => handleVendorChange(text)} onError={handleSpeechError} className="mt-2 size-10" />
         </div>
       </div>
 
@@ -244,7 +248,7 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
                   placeholder={t("form.itemDescriptionPlaceholder")}
                   className="h-10 flex-1 text-sm"
                 />
-                <SpeechInputButton onResult={(text) => setValue(`lineItems.${index}.description`, text)} className="size-8" />
+                <SpeechInputButton onResult={(text) => setValue(`lineItems.${index}.description`, text)} onError={handleSpeechError} className="size-8" />
               </div>
               <Input
                 {...register(`lineItems.${index}.amount`)}
@@ -315,6 +319,7 @@ export default function ExpenseForm({ initialData, confidence: externalConfidenc
               const current = form.getValues("notes");
               setValue("notes", current ? `${current} ${text}` : text);
             }}
+            onError={handleSpeechError}
             className="mt-2 size-10"
           />
         </div>

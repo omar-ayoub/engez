@@ -3,15 +3,17 @@ import { useTranslation } from "react-i18next";
 import { Mic } from "lucide-react";
 
 // Web Speech API types — not all browsers expose SpeechRecognition on window
+type SpeechRecognitionErrorEvent = { error: string; message?: string };
 type SpeechRecognitionInstance = {
   lang: string;
   continuous: boolean;
   interimResults: boolean;
   onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
   onend: (() => void) | null;
   start: () => void;
   stop: () => void;
+  abort: () => void;
 };
 type SpeechRecognitionCtor = new () => SpeechRecognitionInstance;
 
@@ -22,12 +24,13 @@ function getSR(): SpeechRecognitionCtor | undefined {
 
 interface SpeechInputButtonProps {
   onResult: (transcript: string) => void;
+  onError?: (error: string) => void;
   className?: string;
 }
 
 const isSupported = typeof window !== "undefined" && !!getSR();
 
-export default function SpeechInputButton({ onResult, className = "" }: SpeechInputButtonProps) {
+export default function SpeechInputButton({ onResult, onError, className = "" }: SpeechInputButtonProps) {
   const { i18n, t } = useTranslation("capture");
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
@@ -47,19 +50,34 @@ export default function SpeechInputButton({ onResult, className = "" }: SpeechIn
     recognition.interimResults = false;
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0][0].transcript;
-      onResult(transcript.trim());
+      const transcript = event.results[0]?.[0]?.transcript;
+      if (transcript) onResult(transcript.trim());
     };
-    recognition.onerror = () => setIsListening(false);
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      setIsListening(false);
+      recognitionRef.current = null;
+      // "aborted" is user-initiated, "no-speech" is normal timeout — don't report these
+      if (event.error !== "aborted" && event.error !== "no-speech") {
+        onError?.(event.error === "not-allowed"
+          ? t("voice.noPermission")
+          : t("voice.networkError"));
+      }
+    };
     recognition.onend = () => {
       setIsListening(false);
       recognitionRef.current = null;
     };
 
     recognitionRef.current = recognition;
-    recognition.start();
-    setIsListening(true);
-  }, [isListening, i18n.language, onResult]);
+    try {
+      recognition.start();
+      setIsListening(true);
+    } catch {
+      setIsListening(false);
+      recognitionRef.current = null;
+      onError?.(t("voice.noPermission"));
+    }
+  }, [isListening, i18n.language, onResult, onError, t]);
 
   if (!isSupported) return null;
 

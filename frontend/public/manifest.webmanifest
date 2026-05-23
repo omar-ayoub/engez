@@ -10,6 +10,7 @@
   "lang": "ar",
   "start_url": "/",
   "scope": "/",
+  "permissions": ["microphone"],
   "icons": [
     {
       "src": "pwa-192x192.svg",
